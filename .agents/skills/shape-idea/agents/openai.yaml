@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shape Idea"
+  short_description: "Turn rough ideas into evidence-aware briefs"
+  default_prompt: "Use $shape-idea to turn this rough idea into a decision-ready brief."

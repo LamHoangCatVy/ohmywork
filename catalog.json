@@ -1,0 +1,15 @@
+{
+  "$schema": "./contracts/catalog.schema.json",
+  "schemaVersion": "0.1.0",
+  "name": "ohmywork",
+  "version": "0.1.0",
+  "description": "Vendor-neutral skills and capability contracts for evidence-gated work.",
+  "skills": [
+    {
+      "id": "shape-idea",
+      "path": ".agents/skills/shape-idea",
+      "manifest": ".agents/skills/shape-idea/capability.json",
+      "maturity": "experimental"
+    }
+  ]
+}

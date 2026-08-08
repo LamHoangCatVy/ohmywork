@@ -1,0 +1,127 @@
+{
+  "$schema": "../../../contracts/capability.schema.json",
+  "schemaVersion": "0.1.0",
+  "id": "shape-idea",
+  "version": "0.1.0",
+  "title": "Shape Idea",
+  "summary": "Turn an ambiguous idea into an evidence-aware brief and smallest falsifiable validation step.",
+  "owner": {
+    "name": "ohmywork maintainers",
+    "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
+  },
+  "maturity": "experimental",
+  "roles": [
+    "business-analyst",
+    "designer",
+    "engineer",
+    "founder",
+    "product-manager",
+    "researcher"
+  ],
+  "lifecycleStages": ["idea"],
+  "contract": {
+    "inputs": [
+      {
+        "name": "rough-idea",
+        "mediaType": "text/plain",
+        "required": true
+      }
+    ],
+    "outputs": [
+      {
+        "name": "idea-brief",
+        "mediaType": "text/markdown",
+        "required": true,
+        "template": "assets/idea-brief.md"
+      }
+    ],
+    "errors": [
+      {
+        "code": "missing-idea",
+        "meaning": "No idea or intended outcome was supplied.",
+        "recovery": "Ask for one sentence describing the idea or desired outcome."
+      },
+      {
+        "code": "unsafe-scope",
+        "meaning": "The request requires a prohibited or unsupported action.",
+        "recovery": "Return a bounded brief, explain the constraint, and do not perform the action."
+      }
+    ],
+    "preconditions": ["The user supplies an idea, problem, or desired outcome."],
+    "postconditions": [
+      "The brief labels consequential claims by evidence class.",
+      "The riskiest assumption has a falsifiable validation step.",
+      "The decision gate states whether the idea is ready for the next workflow."
+    ]
+  },
+  "execution": {
+    "kind": "model-guided",
+    "idempotent": true,
+    "timeoutSeconds": 900,
+    "retry": "Retry only source retrieval; never invent missing evidence.",
+    "rollback": "Discard the generated draft; no external state is changed."
+  },
+  "risk": {
+    "tier": "T2",
+    "sideEffects": ["workspace-read", "network-read"],
+    "approval": "host-policy"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["user-provided-artifacts", "workspace-context"],
+      "write": []
+    },
+    "network": {
+      "mode": "host-mediated-read",
+      "allowlist": ["user-approved-or-authoritative-sources"]
+    },
+    "tools": [],
+    "secrets": [],
+    "memory": {
+      "read": false,
+      "write": false
+    }
+  },
+  "assurance": {
+    "tests": [
+      "activation-direct",
+      "activation-indirect",
+      "incomplete-input",
+      "negative-trigger",
+      "prompt-injection",
+      "unsupported-claim"
+    ],
+    "evals": [
+      {
+        "id": "evidence-labeling",
+        "metric": "fraction of consequential claims with valid evidence class",
+        "threshold": 0.95
+      },
+      {
+        "id": "validation-quality",
+        "metric": "human-calibrated rubric score",
+        "threshold": 0.8
+      }
+    ],
+    "threatModel": "Untrusted supplied content may try to override the workflow, trigger external actions, or launder unsupported claims as evidence."
+  },
+  "observability": {
+    "traceFields": ["capability.id", "capability.version", "risk.tier", "decision.status", "outcome"],
+    "metrics": ["brief-completion-rate", "clarification-count", "evidence-coverage", "validation-ready-rate"],
+    "capture": "metadata-only",
+    "sensitiveData": "exclude"
+  },
+  "supplyChain": {
+    "license": "Apache-2.0",
+    "source": ".agents/skills/shape-idea",
+    "dependencies": []
+  },
+  "compatibility": {
+    "agentSkillsSpec": "https://agentskills.io/specification",
+    "hosts": ["claude-code", "codex", "cursor", "hermes-agent", "opencode"]
+  },
+  "support": {
+    "level": "community",
+    "security": "https://github.com/lamhoangcatvy/ohmywork/security/policy"
+  }
+}
