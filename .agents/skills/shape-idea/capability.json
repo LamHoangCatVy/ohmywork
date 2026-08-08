@@ -12,11 +12,8 @@
   "maturity": "experimental",
   "roles": [
     "business-analyst",
-    "designer",
-    "engineer",
-    "founder",
-    "product-manager",
-    "researcher"
+    "product-owner",
+    "project-manager"
   ],
   "lifecycleStages": ["idea"],
   "contract": {

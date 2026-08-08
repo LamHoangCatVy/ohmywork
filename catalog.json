@@ -1,9 +1,26 @@
 {
   "$schema": "./contracts/catalog.schema.json",
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "name": "ohmywork",
-  "version": "0.1.0",
-  "description": "Vendor-neutral skills and capability contracts for evidence-gated work.",
+  "version": "0.2.0",
+  "description": "Open work skills that plug into the AI agent you already use.",
+  "roles": [
+    {
+      "id": "business-analyst",
+      "title": "Business Analyst",
+      "summary": "Turn ambiguity into evidence, requirements, and decision-ready artifacts."
+    },
+    {
+      "id": "product-owner",
+      "title": "Product Owner",
+      "summary": "Turn product intent into outcomes, priorities, and testable work."
+    },
+    {
+      "id": "project-manager",
+      "title": "Project Manager",
+      "summary": "Turn agreed outcomes into coordinated plans, decisions, and learning loops."
+    }
+  ],
   "skills": [
     {
       "id": "shape-idea",

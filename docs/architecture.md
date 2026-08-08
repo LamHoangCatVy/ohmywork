@@ -54,12 +54,25 @@ Every artifact version is immutable. New evidence or a changed decision creates 
     references/                 On-demand knowledge
     scripts/                    Deterministic helpers
 contracts/                      JSON Schema 2020-12 contracts
-catalog.json                    Versioned discovery catalog
+catalog.json                    Versioned role and skill discovery catalog
 scripts/validate.mjs            Strict validation and policy invariants
 scripts/bootstrap.mjs           Safe project projections and doctor
 ```
 
 The strict `SKILL.md` frontmatter contains only `name` and `description`. The [Agent Skills specification](https://agentskills.io/specification) permits more optional fields, but keeping them out of the canonical file avoids inconsistent host semantics. Extensions belong in sidecars.
+
+## Role-first bundle model
+
+OhMyWork is authored as one portable skill bundle with two views:
+
+- people browse role toolboxes such as “I'm a Business Analyst”;
+- agents discover independent skills such as `shape-idea` from the flat canonical skill directory.
+
+Role display metadata lives in `catalog.json`. Membership lives once in each adjacent capability's `roles` field. A role view is derived by joining those sources; it never owns or copies a `SKILL.md`. This preserves many-to-many reuse because one skill can support several roles and one role can collect several skills.
+
+The current GitHub repository is the bundle source. Bootstrap projections adapt that source for hosts with different project directories. A future packaged installer may install the whole bundle or a role-selected subset, but it must consume the same catalog and canonical skills rather than introduce a second authoring tree.
+
+Do not use role containers such as `.agents/skills/im-a-business-analyst/`. Host discovery and validation operate on `.agents/skills/<skill-id>`, and role wording is presentation that may later be localized.
 
 ## Host compatibility
 

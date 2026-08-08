@@ -1,8 +1,8 @@
 {
   "name": "ohmywork-workspace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Vendor-neutral agent skills and capability contracts.",
+  "description": "Open work skill bundle and vendor-neutral capability contracts.",
   "type": "module",
   "scripts": {
     "check": "node scripts/validate.mjs",

@@ -1,85 +1,172 @@
-# ohmywork
+# OhMyWork
 
-Vendor-neutral skills and capability contracts for taking work from a rough idea to a verified, deployable, observable outcome.
+Open work skills for the AI agent you already use.
+
+**Choose your role. Pick a job. Plug in the skills you need.**
 
 > [!IMPORTANT]
-> ohmywork is experimental (`0.x`). The first round establishes the portable skill format, trust model, installer projections, and one reference skill. Build, deploy, gateway, and durable-memory capabilities are roadmap items, not production claims yet.
+> OhMyWork is experimental (`0.x`) and GitHub-first. The repository is the skill-bundle source today; it is not yet published as an `ohmywork` registry package. Only `shape-idea` is implemented. Planned skills below describe the direction, not shipped capability.
 
-## Why this exists
+## Find your toolbox
 
-Agent workflows are usually trapped in one vendor, mixed into one large prompt, and trusted because an agent says it finished. ohmywork takes a different approach:
+```text
+OhMyWork
+├── I'm a Business Analyst
+│   ├── Shape an idea                  available · experimental
+│   └── Draft a BRD                    planned
+├── I'm a Product Owner
+│   ├── Shape an idea                  available · experimental
+│   └── Write user stories             planned
+├── I'm a Project Manager
+    ├── Shape an idea                  available · experimental
+    ├── Initiate a project             planned
+    └── Run a PIR                      planned
+├── I'm a Developer
+│   ├── Write unit tests               planned
+│   ├── Review code                    planned
+│   ├── Refactor code                  planned
+│   └── Write technical documentation  planned
+└── I need a work artifact
+    ├── Create a DOCX document          planned
+    ├── Build an XLSX workbook          planned
+    └── Create a PPTX slide deck        planned
+```
 
-- Store reusable workflows as [Agent Skills](https://agentskills.io/specification), not vendor-specific prompts.
-- Keep live data, authentication, and controlled actions in MCP tools rather than in skill text.
-- Model every capability with machine-readable inputs, outputs, permissions, risk, assurance, and telemetry.
-- Require evidence for completion: artifacts, tests, evals, security checks, release provenance, deployment records, and operational signals.
-- Treat memory as scoped, consented, attributable data—not as an invisible source of policy.
+A role is a toolbox, not a separate copy of the skills. One portable skill can appear in several toolboxes, and every skill remains usable by name.
 
-## What works today
+See the [skill map](docs/skill-map.md) for the full role, engineering-framework, and artifact roadmap.
 
-The canonical skills live in [`.agents/skills`](.agents/skills). Codex, Cursor, and OpenCode can discover that directory directly. The bootstrap command creates safe projections for Claude Code and Hermes without duplicating the source of truth.
+Explore the live catalog:
+
+```bash
+node scripts/bootstrap.mjs list
+node scripts/bootstrap.mjs list roles
+node scripts/bootstrap.mjs list --role business-analyst
+```
+
+## Try the first skill
+
+`shape-idea` turns a rough sentence into an evidence-aware idea brief before anyone commits to a specification or build.
+
+```text
+Input
+  "A shared inbox that helps a support team spot recurring customer problems."
+
+shape-idea
+  → labels evidence and unknowns
+  → identifies the riskiest assumption
+  → proposes the smallest falsifiable test
+
+Output
+  A decision-ready idea brief with a clear proceed, pivot, or stop gate.
+```
+
+Invoke it naturally or by name:
+
+- Codex: `$shape-idea`
+- Claude Code, Cursor, OpenCode, or Hermes: `/shape-idea` or ask for `shape-idea`
+- Natural language: “Turn this idea into a decision-ready brief.”
+
+## Plug in the bundle
+
+### Work from the source repository
 
 ```bash
 git clone https://github.com/lamhoangcatvy/ohmywork.git
 cd ohmywork
+node scripts/bootstrap.mjs list
 node scripts/bootstrap.mjs init
 node scripts/bootstrap.mjs doctor
 ```
 
-Install selected project adapters:
+Codex, Cursor, and OpenCode read the canonical `.agents/skills` directory directly. The bootstrap creates safe project projections for Claude Code and Hermes. Symlinks keep those projections in sync; use `--copy` where symlinks are unavailable.
 
 ```bash
 node scripts/bootstrap.mjs init --agent codex --agent cursor --agent opencode
 node scripts/bootstrap.mjs init --agent claude-code --agent hermes-agent
-```
-
-Symlinks are the default so updates remain in sync. Use `--copy` where symlinks are unavailable:
-
-```bash
 node scripts/bootstrap.mjs init --copy
 ```
 
-You can also install from GitHub with the community [`skills` CLI](https://github.com/vercel-labs/skills):
+### Add every skill to an existing project
+
+The community [`skills` CLI](https://github.com/vercel-labs/skills) can install the GitHub repository as a bundle without OhMyWork being published to npm:
 
 ```bash
+cd your-project
 npx skills add lamhoangcatvy/ohmywork --skill '*' \
-  --agent opencode --agent claude-code --agent codex \
-  --agent cursor --agent hermes-agent
+  --agent codex --agent claude-code --agent cursor \
+  --agent opencode --agent hermes-agent
 ```
 
-The repository wrapper remains the source of truth for local bootstrap behavior because third-party installer locks are not integrity or release locks.
+The repository bootstrap remains the reference implementation for local collision checks, projections, and future role-pack installation.
 
-## First skill
+## How the bundle is organized
 
-`shape-idea` turns one rough sentence into an evidence-aware idea brief before anyone commits to a specification or build.
+The friendly role tree is a catalog view. Canonical Agent Skills stay flat so every supported host can discover the same source without duplicated instructions.
 
-- Codex: invoke `$shape-idea`.
-- Claude Code, Cursor, OpenCode, or Hermes: invoke `/shape-idea` or ask for it by name.
-- Natural language: “Turn this idea into a decision-ready brief.”
+```text
+catalog.json                         Role and skill discovery
+contracts/                           Machine-readable trust schemas
+.agents/skills/                      Canonical portable skills
+  shape-idea/
+    SKILL.md                         Focused workflow
+    capability.json                  Inputs, outputs, risk, permissions, evidence
+    agents/openai.yaml               Optional host-specific UI metadata
+    assets/idea-brief.md             Reusable output template
+scripts/
+  bootstrap.mjs                      Bundle discovery, projections, and doctor
+  validate.mjs                       Catalog, skill, and trust validation
+```
+
+Each future skill follows the same shape:
+
+```text
+.agents/skills/draft-brd/
+  SKILL.md
+  capability.json
+  assets/
+  references/
+  scripts/
+```
+
+Use verb–object skill IDs such as `draft-brd`, `write-user-stories`, `initiate-project`, and `run-pir`. Role labels such as “I'm a Business Analyst” belong in discovery, not in skill directory names.
+
+## Why the extra contract?
+
+OhMyWork is more than a prompt collection. Every capability declares:
+
+- what it accepts and produces;
+- what it may read, write, or call;
+- its risk and approval boundary;
+- how completion is verified;
+- which hosts it supports;
+- who owns and supports it.
+
+That lets a future installer treat a role pack as a curated set without silently increasing authority or hiding side effects.
 
 ## Architecture
 
 | Layer | Responsibility | Source of truth |
 | --- | --- | --- |
+| Role catalog | Human-friendly “I'm a…” discovery | `catalog.json` role metadata plus each capability's `roles` |
 | Skills | Focused, progressively loaded workflows | `.agents/skills/*/SKILL.md` |
 | Capability contracts | Inputs, outputs, effects, permissions, risk, evals, telemetry | `contracts/*.schema.json` and each `capability.json` |
-| Catalog | Discovery and lifecycle metadata | `catalog.json` |
-| Bootstrap | Project projections and health checks | `scripts/bootstrap.mjs` |
-| Future bindings | npm core/React, PyPI CLI, MCP server | Generated from the same contracts |
-| Future control plane | Gateway, identity, policy, audit, memory | Provider-neutral interfaces |
+| Bootstrap | Host projections and health checks | `scripts/bootstrap.mjs` |
+| Future distribution | One-command bundle or role-pack installation | Generated from the same catalog and canonical skills |
 
-Read [the architecture](docs/architecture.md) and [round roadmap](docs/roadmap.md) for the design and acceptance gates.
+Read [the architecture](docs/architecture.md) and [roadmap](docs/roadmap.md) for the deeper trust and delivery model.
 
-## Development
+## Build a skill with us
 
-Requirements: Node.js 20 or newer. Round 0 has no runtime dependencies.
+Start from one user outcome, not an entire job title. A contribution adds one canonical skill, its capability contract, supporting material, and verification evidence. See [Contributing](CONTRIBUTING.md) for the complete checklist.
+
+Requirements: Node.js 20 or newer. The current round has no runtime dependencies.
 
 ```bash
 npm run check
 npm test
+node scripts/bootstrap.mjs doctor
 ```
-
-Changes are delivered one feature round at a time. Each round is reviewed before its commit is pushed to `main`; force-pushes are not part of the workflow.
 
 ## Project policies
 

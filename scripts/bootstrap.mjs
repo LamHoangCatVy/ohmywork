@@ -262,28 +262,95 @@ export async function doctorProject({ root = process.cwd(), agents = [] } = {}) 
   return { root: resolvedRoot, healthy: issues.length === 0, results, issues };
 }
 
+export async function discoverCatalog({ root = process.cwd(), roles = [] } = {}) {
+  const validation = await validateRepository(root);
+  if (validation.errors.length > 0) {
+    throw new Error(`Repository validation failed:\n${validation.errors.map((error) => `- ${error}`).join("\n")}`);
+  }
+
+  const requestedRoles = [...new Set(roles)];
+  const rolesById = new Map(validation.catalog.roles.map((role) => [role.id, role]));
+  for (const roleId of requestedRoles) {
+    if (!rolesById.has(roleId)) {
+      throw new Error(`Unknown role '${roleId}'. Choose: ${[...rolesById.keys()].join(", ")}`);
+    }
+  }
+
+  const skills = validation.catalog.skills.map((entry) => {
+    const capability = validation.capabilities[entry.id];
+    return {
+      id: entry.id,
+      title: capability.title,
+      summary: capability.summary,
+      maturity: entry.maturity,
+      roles: capability.roles,
+      lifecycleStages: capability.lifecycleStages,
+      path: entry.path,
+    };
+  });
+  const selectedRoles = requestedRoles.length > 0
+    ? requestedRoles.map((roleId) => rolesById.get(roleId))
+    : validation.catalog.roles;
+
+  return {
+    root: validation.root,
+    name: validation.catalog.name,
+    version: validation.catalog.version,
+    description: validation.catalog.description,
+    roles: selectedRoles.map((role) => ({
+      ...role,
+      skills: skills.filter((skill) => skill.roles.includes(role.id)).map((skill) => skill.id),
+    })),
+    skills: requestedRoles.length > 0
+      ? skills.filter((skill) => requestedRoles.some((roleId) => skill.roles.includes(roleId)))
+      : skills,
+  };
+}
+
 function usage() {
-  return `ohmywork bootstrap
+  return `OhMyWork skill bundle
 
 Usage:
   node scripts/bootstrap.mjs init [--agent <id>]... [--copy] [--root <path>] [--json]
   node scripts/bootstrap.mjs doctor [--agent <id>]... [--root <path>] [--json]
-  node scripts/bootstrap.mjs list [--root <path>] [--json]
+  node scripts/bootstrap.mjs list [roles] [--role <id>]... [--root <path>] [--json]
+  node scripts/bootstrap.mjs --version
+
+The repository is the bundle source of truth. Roles are discovery views over
+portable skills in .agents/skills; they never duplicate SKILL.md files.
 
 Agents: ${Object.keys(AGENTS).join(", ")}, all`;
 }
 
 function parseArgs(argv) {
-  const [command, ...rest] = argv;
-  const options = { command, root: process.cwd(), agents: [], mode: "symlink", json: false };
+  let [command, ...rest] = argv;
+  if (command === "--help" || command === "-h") command = "help";
+  if (command === "--version" || command === "-v") command = "version";
+  const options = {
+    command,
+    root: process.cwd(),
+    agents: [],
+    roles: [],
+    subject: null,
+    mode: "symlink",
+    json: false,
+  };
   for (let index = 0; index < rest.length; index += 1) {
     const argument = rest[index];
     if (argument === "--agent") options.agents.push(rest[++index]);
+    else if (argument === "--role") options.roles.push(rest[++index]);
     else if (argument === "--copy") options.mode = "copy";
     else if (argument === "--root") options.root = rest[++index];
     else if (argument === "--json") options.json = true;
     else if (argument === "--help" || argument === "-h") options.command = "help";
+    else if (options.command === "list" && !options.subject) options.subject = argument;
     else throw new Error(`Unknown option: ${argument}`);
+  }
+  if (options.roles.some((role) => !role)) throw new Error("--role requires an id");
+  if (options.agents.some((agent) => !agent)) throw new Error("--agent requires an id");
+  if (!options.root) throw new Error("--root requires a path");
+  if (options.roles.length > 0 && options.command !== "list") {
+    throw new Error("--role currently filters discovery only; use it with the list command");
   }
   return options;
 }
@@ -300,12 +367,43 @@ function printResult(payload, json) {
   for (const issue of payload.issues ?? []) console.error(`issue: ${issue}`);
 }
 
+function printDiscovery(payload, { json = false, rolesOnly = false } = {}) {
+  if (json) {
+    console.log(JSON.stringify(payload, null, 2));
+    return;
+  }
+
+  const skillsById = new Map(payload.skills.map((skill) => [skill.id, skill]));
+  console.log("OhMyWork — choose your role, then plug in a skill");
+  console.log(payload.description);
+  for (const role of payload.roles) {
+    console.log(`\nI'm a ${role.title}`);
+    console.log(`  ${role.summary}`);
+    if (rolesOnly) continue;
+    for (const skillId of role.skills) {
+      const skill = skillsById.get(skillId);
+      console.log(`  ${skill.id} [${skill.maturity}]`);
+      console.log(`    ${skill.summary}`);
+    }
+  }
+  if (!rolesOnly) {
+    console.log("\nTry:");
+    console.log("  node scripts/bootstrap.mjs init --agent codex");
+    console.log("  node scripts/bootstrap.mjs list --role business-analyst");
+  }
+}
+
 async function main() {
   let options;
   try {
     options = parseArgs(process.argv.slice(2));
     if (!options.command || options.command === "help") {
       console.log(usage());
+      return;
+    }
+    if (options.command === "version") {
+      const discovery = await discoverCatalog({ root: options.root });
+      console.log(discovery.version);
       return;
     }
     if (options.command === "init") {
@@ -322,17 +420,13 @@ async function main() {
       return;
     }
     if (options.command === "list") {
-      const validation = await validateRepository(options.root);
-      if (validation.errors.length > 0) throw new Error(validation.errors.join("\n"));
-      const result = {
-        root: validation.root,
-        results: validation.catalog.skills.map((skill) => ({
-          skill: skill.id,
-          status: skill.maturity,
-          target: skill.path,
-        })),
-      };
-      printResult(result, options.json);
+      if (options.subject && options.subject !== "roles") {
+        throw new Error(`Unknown list subject '${options.subject}'. Choose: roles`);
+      }
+      printDiscovery(
+        await discoverCatalog({ root: options.root, roles: options.roles }),
+        { json: options.json, rolesOnly: options.subject === "roles" },
+      );
       return;
     }
     throw new Error(`Unknown command '${options.command}'`);

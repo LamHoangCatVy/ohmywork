@@ -278,17 +278,17 @@ async function validateSkill(root, catalogEntry, errors) {
   const canonicalRoot = path.resolve(root, ".agents", "skills");
   if (!skillRoot.startsWith(`${canonicalRoot}${path.sep}`)) {
     addError(errors, catalogEntry.id, "skill path escapes .agents/skills");
-    return;
+    return null;
   }
   if (!(await exists(skillRoot))) {
     addError(errors, catalogEntry.id, `missing skill directory '${catalogEntry.path}'`);
-    return;
+    return null;
   }
 
   const skillFile = path.join(skillRoot, "SKILL.md");
   if (!(await exists(skillFile))) {
     addError(errors, catalogEntry.id, "missing SKILL.md");
-    return;
+    return null;
   }
   const markdown = await readFile(skillFile, "utf8");
   const parsed = parseSkillFrontmatter(markdown, `${catalogEntry.path}/SKILL.md`);
@@ -313,10 +313,10 @@ async function validateSkill(root, catalogEntry, errors) {
   const manifestPath = path.resolve(root, catalogEntry.manifest);
   if (!manifestPath.startsWith(`${skillRoot}${path.sep}`)) {
     addError(errors, catalogEntry.id, "capability manifest must live inside its skill directory");
-    return;
+    return null;
   }
   const capability = await loadJson(manifestPath, errors, `${catalogEntry.id}/capability.json`);
-  if (!capability) return;
+  if (!capability) return null;
   for (const message of validateCapabilityDocument(capability, catalogEntry.id)) {
     addError(errors, catalogEntry.id, message);
   }
@@ -341,11 +341,13 @@ async function validateSkill(root, catalogEntry, errors) {
       addError(errors, catalogEntry.id, "agents/openai.yaml default_prompt must mention the skill with '$'");
     }
   }
+  return capability;
 }
 
 export async function validateRepository(root = process.cwd()) {
   const errors = [];
   const warnings = [];
+  const capabilities = {};
   const resolvedRoot = path.resolve(root);
 
   const catalogPath = path.join(resolvedRoot, "catalog.json");
@@ -358,15 +360,47 @@ export async function validateRepository(root = process.cwd()) {
     }
   }
 
-  if (!catalog) return { root: resolvedRoot, catalog: null, errors, warnings };
-  for (const field of ["schemaVersion", "name", "version", "description", "skills"]) {
+  if (!catalog) return { root: resolvedRoot, catalog: null, capabilities, errors, warnings };
+  for (const field of ["schemaVersion", "name", "version", "description", "roles", "skills"]) {
     if (!Object.hasOwn(catalog, field)) addError(errors, "catalog.json", `missing '${field}'`);
   }
   if (!SEMVER_PATTERN.test(catalog.schemaVersion ?? "")) addError(errors, "catalog.schemaVersion", "must be semantic version syntax");
   if (!SEMVER_PATTERN.test(catalog.version ?? "")) addError(errors, "catalog.version", "must be semantic version syntax");
+  if (!Array.isArray(catalog.roles)) addError(errors, "catalog.roles", "must be an array");
   if (!Array.isArray(catalog.skills)) addError(errors, "catalog.skills", "must be an array");
 
+  const roleIds = new Set();
+  const catalogRoles = Array.isArray(catalog.roles) ? catalog.roles : [];
+  for (const [index, role] of catalogRoles.entries()) {
+    const location = `catalog.roles[${index}]`;
+    if (!role || typeof role !== "object" || Array.isArray(role)) {
+      addError(errors, location, "must be an object");
+      continue;
+    }
+    for (const field of ["id", "title", "summary"]) {
+      if (!Object.hasOwn(role, field)) addError(errors, location, `missing '${field}'`);
+    }
+    for (const field of Object.keys(role)) {
+      if (!new Set(["id", "title", "summary"]).has(field)) {
+        addError(errors, location, `unknown field '${field}'`);
+      }
+    }
+    if (!ID_PATTERN.test(role.id ?? "")) {
+      addError(errors, `${location}.id`, "must be lowercase kebab-case");
+    } else {
+      if (roleIds.has(role.id)) addError(errors, "catalog.roles", `duplicate id '${role.id}'`);
+      roleIds.add(role.id);
+    }
+    if (!isNonEmptyString(role.title) || role.title.length > 80) {
+      addError(errors, `${location}.title`, "must be a non-empty string of at most 80 characters");
+    }
+    if (!isNonEmptyString(role.summary) || role.summary.length > 300) {
+      addError(errors, `${location}.summary`, "must be a non-empty string of at most 300 characters");
+    }
+  }
+
   const seen = new Set();
+  const referencedRoles = new Set();
   for (const entry of catalog.skills ?? []) {
     if (!entry || typeof entry !== "object") {
       addError(errors, "catalog.skills", "every entry must be an object");
@@ -376,7 +410,21 @@ export async function validateRepository(root = process.cwd()) {
     if (seen.has(entry.id)) addError(errors, "catalog.skills", `duplicate id '${entry.id}'`);
     seen.add(entry.id);
     if (!MATURITY.has(entry.maturity)) addError(errors, entry.id ?? "catalog.skills", "unknown maturity");
-    await validateSkill(resolvedRoot, entry, errors);
+    const capability = await validateSkill(resolvedRoot, entry, errors);
+    if (capability) {
+      capabilities[entry.id] = capability;
+      for (const roleId of capability.roles ?? []) {
+        if (!roleIds.has(roleId)) {
+          addError(errors, `${entry.id}.roles`, `unknown catalog role '${roleId}'`);
+        } else {
+          referencedRoles.add(roleId);
+        }
+      }
+    }
+  }
+
+  for (const roleId of roleIds) {
+    if (!referencedRoles.has(roleId)) addError(errors, "catalog.roles", `role '${roleId}' has no skills`);
   }
 
   const skillsRoot = path.join(resolvedRoot, ".agents", "skills");
@@ -393,7 +441,7 @@ export async function validateRepository(root = process.cwd()) {
   if ((catalog.skills?.length ?? 0) > 50) {
     warnings.push("catalog: more than 50 skills may crowd host discovery; prefer installable profiles");
   }
-  return { root: resolvedRoot, catalog, errors, warnings };
+  return { root: resolvedRoot, catalog, capabilities, errors, warnings };
 }
 
 function parseCliArgs(argv) {

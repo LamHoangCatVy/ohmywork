@@ -21,6 +21,7 @@ Status: in progress; local candidate awaiting verification and review.
 Scope:
 
 - Agent Skills canonical layout and host projections.
+- Role-first bundle discovery backed by a validated role registry and capability membership.
 - Capability/catalog JSON Schema 2020-12 contracts.
 - Risk tiers, permission declarations, assurance, observability, ownership, and licensing.
 - Safe `init`, `doctor`, catalog validator, and collision/integrity tests.
@@ -30,6 +31,7 @@ Scope:
 Acceptance:
 
 - Every catalog entry, skill, sidecar, and local reference validates.
+- Every role resolves to at least one real skill without duplicating canonical skill content.
 - `init` is idempotent for Codex, Cursor, OpenCode, Claude Code, and Hermes.
 - Symlink and copy modes pass; unmanaged paths are never overwritten.
 - The sample capability declares owner, license, effects, permissions, evals, threat model, telemetry, and support.
@@ -41,6 +43,8 @@ Scope:
 
 - Opportunity, stakeholder, assumption, research, feasibility, and risk skills.
 - Requirements, quality attributes, acceptance criteria, data classification, UX flow, accessibility, architecture, ADR, API/event/data contracts, threat model, work breakdown, dependencies, ownership, estimates, release, migration, and rollback plans.
+- Role toolboxes for business analysis, product ownership, and project management, including BRDs, user stories, project initiation, risk registers, and post-implementation reviews.
+- Shared artifact skills for accessible DOCX documents, XLSX workbooks, and PPTX slide decks.
 - Role profiles for sponsor, product, research, design, architecture, delivery, engineering, QA/eval, security/privacy, platform/SRE, data/ML, documentation/community, GRC/OSPO, and FinOps.
 
 Acceptance:
@@ -55,6 +59,7 @@ Acceptance:
 Scope:
 
 - Repository bootstrap, implementation, refactoring, code review, migrations, IaC, feature flags, documentation-as-code, and local developer experience.
+- Developer skills for framework-aware unit testing, code review, safe refactoring, and technical documentation.
 - Sandboxed deterministic tests and agent evals: unit, property, integration, contract, end-to-end, accessibility, performance, fuzz, recovery, tool selection, trajectory, grounding, refusal, prompt injection, privilege, and memory-poisoning cases.
 
 Acceptance:

@@ -3,7 +3,7 @@ import { cp, lstat, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/prom
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { doctorProject, initializeProject } from "../scripts/bootstrap.mjs";
+import { discoverCatalog, doctorProject, initializeProject } from "../scripts/bootstrap.mjs";
 
 async function fixtureRoot(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), "ohmywork-test-"));
@@ -51,4 +51,19 @@ test("init refuses to overwrite an unmanaged skill", async (t) => {
     /Refusing to overwrite/,
   );
   assert.equal(await readFile(path.join(target, "SKILL.md"), "utf8"), "user-owned\n");
+});
+
+test("discovery groups portable skills into role views", async () => {
+  const discovery = await discoverCatalog();
+  assert.deepEqual(
+    discovery.roles.map((role) => role.id),
+    ["business-analyst", "product-owner", "project-manager"],
+  );
+  assert.deepEqual(discovery.roles[0].skills, ["shape-idea"]);
+  assert.equal(discovery.skills[0].title, "Shape Idea");
+
+  const filtered = await discoverCatalog({ roles: ["product-owner"] });
+  assert.deepEqual(filtered.roles.map((role) => role.id), ["product-owner"]);
+  assert.deepEqual(filtered.skills.map((skill) => skill.id), ["shape-idea"]);
+  await assert.rejects(discoverCatalog({ roles: ["imaginary-role"] }), /Unknown role/);
 });

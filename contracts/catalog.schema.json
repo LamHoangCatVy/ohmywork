@@ -4,13 +4,19 @@
   "title": "ohmywork catalog",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "schemaVersion", "name", "version", "description", "skills"],
+  "required": ["$schema", "schemaVersion", "name", "version", "description", "roles", "skills"],
   "properties": {
     "$schema": { "type": "string" },
     "schemaVersion": { "$ref": "#/$defs/semver" },
     "name": { "const": "ohmywork" },
     "version": { "$ref": "#/$defs/semver" },
     "description": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/role" }
+    },
     "skills": {
       "type": "array",
       "items": {
@@ -27,6 +33,16 @@
     }
   },
   "$defs": {
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "summary"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 300 }
+      }
+    },
     "id": {
       "type": "string",
       "minLength": 1,

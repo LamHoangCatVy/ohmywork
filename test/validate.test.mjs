@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
   parseSkillFrontmatter,
@@ -10,6 +13,47 @@ test("the repository satisfies the strict Round 0 contract", async () => {
   const result = await validateRepository();
   assert.deepEqual(result.errors, []);
   assert.equal(result.catalog.skills.length, 1);
+  assert.deepEqual(
+    result.catalog.roles.map((role) => role.id),
+    ["business-analyst", "product-owner", "project-manager"],
+  );
+});
+
+test("every capability role must exist in the catalog role registry", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "ohmywork-role-test-"));
+  t.after(async () => rm(root, { recursive: true, force: true }));
+  await Promise.all([
+    cp(path.resolve(".agents"), path.join(root, ".agents"), { recursive: true }),
+    cp(path.resolve("contracts"), path.join(root, "contracts"), { recursive: true }),
+    cp(path.resolve("catalog.json"), path.join(root, "catalog.json")),
+  ]);
+
+  const capabilityPath = path.join(root, ".agents/skills/shape-idea/capability.json");
+  const capability = JSON.parse(await readFile(capabilityPath, "utf8"));
+  capability.roles.push("imaginary-role");
+  await writeFile(capabilityPath, `${JSON.stringify(capability, null, 2)}\n`, "utf8");
+
+  const result = await validateRepository(root);
+  assert.match(result.errors.join("\n"), /unknown catalog role 'imaginary-role'/);
+});
+
+test("catalog role metadata rejects duplicate ids and unknown fields", async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "ohmywork-role-test-"));
+  t.after(async () => rm(root, { recursive: true, force: true }));
+  await Promise.all([
+    cp(path.resolve(".agents"), path.join(root, ".agents"), { recursive: true }),
+    cp(path.resolve("contracts"), path.join(root, "contracts"), { recursive: true }),
+    cp(path.resolve("catalog.json"), path.join(root, "catalog.json")),
+  ]);
+
+  const catalogPath = path.join(root, "catalog.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8"));
+  catalog.roles.push({ ...catalog.roles[0], extra: true });
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  const result = await validateRepository(root);
+  assert.match(result.errors.join("\n"), /duplicate id 'business-analyst'/);
+  assert.match(result.errors.join("\n"), /unknown field 'extra'/);
 });
 
 test("strict-core skill frontmatter rejects vendor extensions", () => {
