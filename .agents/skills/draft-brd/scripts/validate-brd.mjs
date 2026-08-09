@@ -46,7 +46,8 @@ export function validateBrd(markdown) {
     if (!pattern.test(markdown)) errors.push(`missing section '## ${section}'`);
   }
 
-  const requirementLines = markdown
+  const requirementSection = markdown.match(/## Business requirements\s+([\s\S]*?)(?=\n## |$)/)?.[1] ?? "";
+  const requirementLines = requirementSection
     .split(/\r?\n/)
     .filter((line) => /^\|\s*BR-[0-9]{3,}\s*\|/.test(line));
   if (requirementLines.length === 0) errors.push("no business requirement rows with IDs such as BR-001");

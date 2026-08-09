@@ -19,12 +19,14 @@ async function fixtureRoot(t) {
 test("init creates idempotent Claude and Hermes projections", async (t) => {
   const root = await fixtureRoot(t);
   const first = await initializeProject({ root });
-  assert.equal(first.results.filter((result) => result.status === "created").length, 2);
+  assert.equal(first.results.filter((result) => result.status === "created").length, 4);
   assert.equal((await lstat(path.join(root, ".claude/skills/shape-idea"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".claude/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/shape-idea"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".hermes/skills/draft-brd"))).isSymbolicLink(), true);
 
   const second = await initializeProject({ root });
-  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 2);
+  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 4);
   const doctor = await doctorProject({ root });
   assert.equal(doctor.healthy, true, doctor.issues.join("\n"));
 });
@@ -59,7 +61,7 @@ test("discovery groups portable skills into role views", async () => {
     discovery.roles.map((role) => role.id),
     ["business-analyst", "product-owner", "project-manager"],
   );
-  assert.deepEqual(discovery.roles[0].skills, ["shape-idea"]);
+  assert.deepEqual(discovery.roles[0].skills, ["shape-idea", "draft-brd"]);
   assert.equal(discovery.skills[0].title, "Shape Idea");
 
   const filtered = await discoverCatalog({ roles: ["product-owner"] });
