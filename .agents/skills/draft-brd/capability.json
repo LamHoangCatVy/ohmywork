@@ -1,0 +1,137 @@
+{
+  "$schema": "../../../contracts/capability.schema.json",
+  "schemaVersion": "0.1.0",
+  "id": "draft-brd",
+  "version": "0.1.0",
+  "title": "Draft BRD",
+  "summary": "Turn business context and source evidence into a traceable, decision-ready business requirements document.",
+  "owner": {
+    "name": "ohmywork maintainers",
+    "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
+  },
+  "maturity": "experimental",
+  "roles": ["business-analyst"],
+  "lifecycleStages": ["requirements"],
+  "contract": {
+    "inputs": [
+      {
+        "name": "business-context",
+        "mediaType": "text/plain",
+        "required": true
+      },
+      {
+        "name": "source-artifacts",
+        "mediaType": "application/octet-stream",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "business-requirements-document",
+        "mediaType": "text/markdown",
+        "required": true,
+        "template": "assets/brd-template.md"
+      }
+    ],
+    "errors": [
+      {
+        "code": "missing-context",
+        "meaning": "No business problem, opportunity, source artifact, or intended decision was supplied.",
+        "recovery": "Ask for a concise business context or an artifact from which to draft the BRD."
+      },
+      {
+        "code": "conflicting-sources",
+        "meaning": "Material sources disagree about scope, requirements, ownership, or success.",
+        "recovery": "Preserve the conflict, identify the decision needed, and mark the BRD not ready when it blocks downstream work."
+      },
+      {
+        "code": "unsupported-claim",
+        "meaning": "A consequential claim lacks supplied or inspected evidence.",
+        "recovery": "Label the claim Inferred or Unknown and name a verification action when possible."
+      }
+    ],
+    "preconditions": ["The user supplies business context, source material, an existing draft, or an intended business decision."],
+    "postconditions": [
+      "Every business requirement has an ID, rationale, evidence label, priority, acceptance signal, and owner or explicit Unknown.",
+      "Requirements trace to business objectives and inspected or supplied sources.",
+      "The decision gate states ready, ready with assumptions, or not ready with supporting evidence."
+    ]
+  },
+  "execution": {
+    "kind": "hybrid",
+    "idempotent": false,
+    "timeoutSeconds": 1200,
+    "retry": "Retry only source retrieval or deterministic validation; never invent missing evidence.",
+    "rollback": "Discard the generated draft or restore the previous user-owned file; do not overwrite without confirmation."
+  },
+  "risk": {
+    "tier": "T2",
+    "sideEffects": ["workspace-read", "workspace-write", "network-read"],
+    "approval": "host-policy"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["user-provided-artifacts", "workspace-context"],
+      "write": ["user-approved-output-path"]
+    },
+    "network": {
+      "mode": "host-mediated-read",
+      "allowlist": ["user-approved-or-authoritative-sources"]
+    },
+    "tools": [],
+    "secrets": [],
+    "memory": {
+      "read": false,
+      "write": false
+    }
+  },
+  "assurance": {
+    "tests": [
+      "activation-direct",
+      "activation-indirect",
+      "incomplete-input",
+      "negative-trigger",
+      "conflicting-sources",
+      "prompt-injection",
+      "unsupported-claim",
+      "brd-structure"
+    ],
+    "evals": [
+      {
+        "id": "requirement-traceability",
+        "metric": "fraction of business requirements linked to evidence, objective, and acceptance signal",
+        "threshold": 0.95
+      },
+      {
+        "id": "requirement-quality",
+        "metric": "human-calibrated rubric score for singular, solution-neutral, observable requirements",
+        "threshold": 0.85
+      },
+      {
+        "id": "uncertainty-labeling",
+        "metric": "fraction of unsupported consequential claims labeled Inferred or Unknown",
+        "threshold": 0.95
+      }
+    ],
+    "threatModel": "Untrusted source content may attempt to override the workflow, inject false requirements, hide conflicts, expose sensitive information, or fabricate stakeholder approval."
+  },
+  "observability": {
+    "traceFields": ["capability.id", "capability.version", "risk.tier", "decision.status", "outcome"],
+    "metrics": ["brd-completion-rate", "requirement-traceability", "unknown-count", "validation-pass-rate"],
+    "capture": "metadata-only",
+    "sensitiveData": "exclude"
+  },
+  "supplyChain": {
+    "license": "Apache-2.0",
+    "source": ".agents/skills/draft-brd",
+    "dependencies": []
+  },
+  "compatibility": {
+    "agentSkillsSpec": "https://agentskills.io/specification",
+    "hosts": ["claude-code", "codex", "cursor", "hermes-agent", "opencode"]
+  },
+  "support": {
+    "level": "community",
+    "security": "https://github.com/lamhoangcatvy/ohmywork/security/policy"
+  }
+}

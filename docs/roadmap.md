@@ -25,7 +25,7 @@ Scope:
 - Capability/catalog JSON Schema 2020-12 contracts.
 - Risk tiers, permission declarations, assurance, observability, ownership, and licensing.
 - Safe `init`, `doctor`, catalog validator, and collision/integrity tests.
-- One reference skill: `shape-idea`.
+- Two reference skills: `shape-idea` and `draft-brd`.
 - Open-source community and security baseline.
 
 Acceptance:
@@ -34,7 +34,7 @@ Acceptance:
 - Every role resolves to at least one real skill without duplicating canonical skill content.
 - `init` is idempotent for Codex, Cursor, OpenCode, Claude Code, and Hermes.
 - Symlink and copy modes pass; unmanaged paths are never overwritten.
-- The sample capability declares owner, license, effects, permissions, evals, threat model, telemetry, and support.
+- Each reference capability declares owner, license, effects, permissions, evals, threat model, telemetry, and support.
 - Direct, indirect, incomplete, negative-trigger, unsupported-claim, and prompt-injection scenarios are forward-tested.
 
 ## R1 — One sentence to decision-ready spec and plan

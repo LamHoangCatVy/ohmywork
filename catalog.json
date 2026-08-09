@@ -2,7 +2,7 @@
   "$schema": "./contracts/catalog.schema.json",
   "schemaVersion": "0.2.0",
   "name": "ohmywork",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Open work skills that plug into the AI agent you already use.",
   "roles": [
     {
@@ -26,6 +26,12 @@
       "id": "shape-idea",
       "path": ".agents/skills/shape-idea",
       "manifest": ".agents/skills/shape-idea/capability.json",
+      "maturity": "experimental"
+    },
+    {
+      "id": "draft-brd",
+      "path": ".agents/skills/draft-brd",
+      "manifest": ".agents/skills/draft-brd/capability.json",
       "maturity": "experimental"
     }
   ]

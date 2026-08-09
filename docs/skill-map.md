@@ -8,7 +8,7 @@ Status: product map for the GitHub-first bundle. A skill appears in `catalog.jso
 OhMyWork
 ├── I'm a Business Analyst
 │   ├── Shape an idea                         available · experimental
-│   ├── Draft a BRD                           planned
+│   ├── Draft a BRD                           available · experimental
 │   ├── Analyze requirements                  planned
 │   ├── Map a business process                planned
 │   └── Trace requirements                    planned
@@ -162,9 +162,9 @@ The portable skill describes the workflow and quality gate. Host-specific integr
 
 ## Recommended build order
 
-1. `draft-brd` — proves one role-specific artifact workflow.
-2. `write-user-stories` — proves reuse across business analysis and product ownership.
-3. `initiate-project` and `run-pir` — completes the first project-management loop.
-4. `write-unit-tests` with Vitest, Jest, and pytest references — proves framework routing.
-5. `create-docx`, `build-xlsx`, and `create-pptx` — proves binary artifact generation and visual verification.
+1. `draft-brd` — available experimentally; validate it on real Business Analyst scenarios.
+2. `write-user-stories` — prove reuse across business analysis and product ownership.
+3. `initiate-project` and `run-pir` — complete the first project-management loop.
+4. `write-unit-tests` with Vitest, Jest, and pytest references — prove framework routing.
+5. `create-docx`, `build-xlsx`, and `create-pptx` — prove binary artifact generation and visual verification.
 6. Expand framework references and role packs only after the first workflows pass their declared evals.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Draft BRD"
+  short_description: "Turn business context into a traceable BRD"
+  default_prompt: "Use $draft-brd to turn this business context into a decision-ready BRD."

@@ -5,7 +5,7 @@ Open work skills for the AI agent you already use.
 **Choose your role. Pick a job. Plug in the skills you need.**
 
 > [!IMPORTANT]
-> OhMyWork is experimental (`0.x`) and GitHub-first. The repository is the skill-bundle source today; it is not yet published as an `ohmywork` registry package. Only `shape-idea` is implemented. Planned skills below describe the direction, not shipped capability.
+> OhMyWork is experimental (`0.x`) and GitHub-first. The repository is the skill-bundle source today; it is not yet published as an `ohmywork` registry package. Only skills marked available are implemented; planned skills describe the direction, not shipped capability.
 
 ## Find your toolbox
 
@@ -13,7 +13,7 @@ Open work skills for the AI agent you already use.
 OhMyWork
 ├── I'm a Business Analyst
 │   ├── Shape an idea                  available · experimental
-│   └── Draft a BRD                    planned
+│   └── Draft a BRD                    available · experimental
 ├── I'm a Product Owner
 │   ├── Shape an idea                  available · experimental
 │   └── Write user stories             planned
@@ -66,6 +66,19 @@ Invoke it naturally or by name:
 - Codex: `$shape-idea`
 - Claude Code, Cursor, OpenCode, or Hermes: `/shape-idea` or ask for `shape-idea`
 - Natural language: “Turn this idea into a decision-ready brief.”
+
+The first Business Analyst workflow is also available:
+
+```text
+business context or an approved idea brief
+  → draft-brd
+  → traceable business requirements document
+  → structural validation and a decision gate
+```
+
+- Codex: `$draft-brd`
+- Other supported hosts: `/draft-brd` or ask to “Draft a BRD from this context.”
+- Output template: requirement IDs, evidence, priority, acceptance signals, traceability, risks, open questions, and decision readiness.
 
 ## Plug in the bundle
 
