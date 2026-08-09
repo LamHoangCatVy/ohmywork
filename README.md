@@ -16,7 +16,8 @@ OhMyWork
 │   └── Draft a BRD                    available · experimental
 ├── I'm a Product Owner
 │   ├── Shape an idea                  available · experimental
-│   └── Write user stories             planned
+│   ├── Write user stories             available · experimental
+│   └── Define acceptance criteria     planned
 ├── I'm a Project Manager
 │   ├── Shape an idea                  available · experimental
 │   ├── Initiate a project             planned
@@ -80,6 +81,19 @@ business context or an approved idea brief
 - Other supported hosts: `/draft-brd` or ask to “Draft a BRD from this context.”
 - Output template: requirement IDs, evidence, priority, acceptance signals, traceability, risks, open questions, and decision readiness.
 
+The first Product Owner workflow turns an outcome or BRD into small, traceable vertical slices:
+
+```text
+product context, BRD, or requirement set
+  → write-user-stories
+  → refinement-ready story map and user-story set
+  → define-acceptance-criteria (planned next)
+```
+
+- Codex: `$write-user-stories`
+- Other supported hosts: `/write-user-stories` or ask to “Turn these requirements into user stories.”
+- Output template: stable story IDs, value, source evidence, proposed priority, dependencies, acceptance intent, and readiness.
+
 ## Plug in the bundle
 
 ### Work from the source repository
@@ -126,6 +140,12 @@ contracts/                           Machine-readable trust schemas
     capability.json                  Inputs, outputs, risk, permissions, evidence
     agents/openai.yaml               Optional host-specific UI metadata
     assets/idea-brief.md             Reusable output template
+  write-user-stories/
+    SKILL.md                         Product Owner story-slicing workflow
+    capability.json                  Inputs, outputs, permissions, and evals
+    assets/user-stories-template.md  Reusable story-set template
+    references/story-quality.md      Vertical-slicing and INVEST guidance
+    scripts/validate-user-stories.mjs
 scripts/
   bootstrap.mjs                      Bundle discovery, projections, and doctor
   validate.mjs                       Catalog, skill, and trust validation

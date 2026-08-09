@@ -1,21 +1,21 @@
 {
   "$schema": "../../../contracts/capability.schema.json",
   "schemaVersion": "0.1.0",
-  "id": "draft-brd",
+  "id": "write-user-stories",
   "version": "0.1.0",
-  "title": "Business Requirements Document Drafting",
-  "summary": "Turn business context and source evidence into a traceable, decision-ready business requirements document.",
+  "title": "Write User Stories",
+  "summary": "Turn product outcomes and source evidence into traceable, vertically sliced, refinement-ready user stories.",
   "owner": {
     "name": "ohmywork maintainers",
     "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
   },
   "maturity": "experimental",
-  "roles": ["business-analyst"],
+  "roles": ["product-owner"],
   "lifecycleStages": ["requirements"],
   "contract": {
     "inputs": [
       {
-        "name": "business-context",
+        "name": "product-context",
         "mediaType": "text/plain",
         "required": true
       },
@@ -27,46 +27,46 @@
     ],
     "outputs": [
       {
-        "name": "business-requirements-document",
+        "name": "user-story-set",
         "mediaType": "text/markdown",
         "required": true,
-        "template": "assets/brd-template.md"
+        "template": "assets/user-stories-template.md"
       }
     ],
     "errors": [
       {
         "code": "missing-context",
-        "meaning": "No business problem, opportunity, source artifact, or intended decision was supplied.",
-        "recovery": "Ask for a concise business context or an artifact from which to draft the BRD."
+        "meaning": "No product outcome, requirement, source artifact, backlog item, or intended user value was supplied.",
+        "recovery": "Ask for concise product context or an artifact from which to derive stories."
       },
       {
         "code": "conflicting-sources",
-        "meaning": "Material sources disagree about scope, requirements, ownership, or success.",
-        "recovery": "Preserve the conflict, identify the decision needed, and mark the BRD not ready when it blocks downstream work."
+        "meaning": "Material sources disagree about the actor, outcome, scope, priority, rule, or dependency.",
+        "recovery": "Preserve the conflict, identify the decision needed, and block affected stories when refinement would be misleading."
       },
       {
         "code": "unsupported-claim",
-        "meaning": "A consequential claim lacks supplied or inspected evidence.",
+        "meaning": "A consequential actor, value, priority, dependency, or business rule lacks supplied or inspected evidence.",
         "recovery": "Label the claim Inferred or Unknown and name a verification action when possible."
       }
     ],
-    "preconditions": ["The user supplies business context, source material, an existing draft, or an intended business decision."],
+    "preconditions": ["The user supplies product context, source material, an existing backlog item, or an intended product outcome."],
     "postconditions": [
-      "Every business requirement has an ID, rationale, evidence label, priority, acceptance signal, and owner or explicit Unknown.",
-      "Requirements trace to business objectives and inspected or supplied sources.",
-      "The decision gate states ready, ready with assumptions, or not ready with supporting evidence."
+      "Every story has a stable ID, user-story statement, value, source label, priority, dependencies, acceptance intent, and readiness.",
+      "Stories are vertical slices traceable to supplied or inspected product evidence.",
+      "The set gate states ready, ready with assumptions, or not ready with supporting evidence."
     ]
   },
   "execution": {
     "kind": "hybrid",
     "idempotent": false,
     "timeoutSeconds": 1200,
-    "retry": "Retry only source retrieval or deterministic validation; never invent missing evidence.",
-    "rollback": "Discard the generated draft or restore the previous user-owned file; do not overwrite without confirmation."
+    "retry": "Retry only source retrieval or deterministic validation; never invent missing product evidence.",
+    "rollback": "Discard the generated story set or restore the previous user-owned file; do not overwrite without confirmation."
   },
   "risk": {
-    "tier": "T2",
-    "sideEffects": ["workspace-read", "workspace-write", "network-read"],
+    "tier": "T1",
+    "sideEffects": ["workspace-read", "workspace-write"],
     "approval": "host-policy"
   },
   "permissions": {
@@ -75,8 +75,8 @@
       "write": ["user-approved-output-path"]
     },
     "network": {
-      "mode": "host-mediated-read",
-      "allowlist": ["user-approved-or-authoritative-sources"]
+      "mode": "none",
+      "allowlist": []
     },
     "tools": [],
     "secrets": [],
@@ -94,17 +94,17 @@
       "conflicting-sources",
       "prompt-injection",
       "unsupported-claim",
-      "brd-structure"
+      "story-structure"
     ],
     "evals": [
       {
-        "id": "requirement-traceability",
-        "metric": "fraction of business requirements linked to evidence, objective, and acceptance signal",
+        "id": "story-traceability",
+        "metric": "fraction of user stories linked to supplied or inspected evidence",
         "threshold": 0.95
       },
       {
-        "id": "requirement-quality",
-        "metric": "human-calibrated rubric score for singular, solution-neutral, observable requirements",
+        "id": "vertical-slice-quality",
+        "metric": "human-calibrated rubric score for valuable, singular, solution-neutral vertical slices",
         "threshold": 0.85
       },
       {
@@ -113,17 +113,17 @@
         "threshold": 0.95
       }
     ],
-    "threatModel": "Untrusted source content may attempt to override the workflow, inject false requirements, hide conflicts, expose sensitive information, or fabricate stakeholder approval."
+    "threatModel": "Untrusted source content may attempt to override the workflow, inject false actors or priorities, hide dependencies, expose sensitive information, or fabricate stakeholder approval."
   },
   "observability": {
     "traceFields": ["capability.id", "capability.version", "risk.tier", "decision.status", "outcome"],
-    "metrics": ["brd-completion-rate", "requirement-traceability", "unknown-count", "validation-pass-rate"],
+    "metrics": ["story-set-completion-rate", "story-traceability", "blocked-story-count", "validation-pass-rate"],
     "capture": "metadata-only",
     "sensitiveData": "exclude"
   },
   "supplyChain": {
     "license": "Apache-2.0",
-    "source": ".agents/skills/draft-brd",
+    "source": ".agents/skills/write-user-stories",
     "dependencies": []
   },
   "compatibility": {

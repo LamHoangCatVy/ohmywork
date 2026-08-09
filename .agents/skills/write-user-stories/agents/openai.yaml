@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write User Stories"
+  short_description: "Turn product outcomes into traceable stories"
+  default_prompt: "Use $write-user-stories to turn this product context into a traceable, refinement-ready story set."

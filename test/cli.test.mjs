@@ -31,5 +31,5 @@ test("list JSON exposes role and skill metadata", async () => {
   const { stdout } = await runCli("list", "--role", "product-owner", "--json");
   const payload = JSON.parse(stdout);
   assert.deepEqual(payload.roles.map((role) => role.id), ["product-owner"]);
-  assert.deepEqual(payload.skills.map((skill) => skill.id), ["shape-idea"]);
+  assert.deepEqual(payload.skills.map((skill) => skill.id), ["shape-idea", "write-user-stories"]);
 });

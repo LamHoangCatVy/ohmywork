@@ -12,7 +12,7 @@ import {
 test("the repository satisfies the strict Round 0 contract", async () => {
   const result = await validateRepository();
   assert.deepEqual(result.errors, []);
-  assert.equal(result.catalog.skills.length, 2);
+  assert.equal(result.catalog.skills.length, 3);
   assert.deepEqual(
     result.catalog.roles.map((role) => role.id),
     ["business-analyst", "product-owner", "project-manager"],
