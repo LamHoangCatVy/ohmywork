@@ -18,9 +18,9 @@ OhMyWork
 │   ├── Shape an idea                  available · experimental
 │   └── Write user stories             planned
 ├── I'm a Project Manager
-    ├── Shape an idea                  available · experimental
-    ├── Initiate a project             planned
-    └── Run a PIR                      planned
+│   ├── Shape an idea                  available · experimental
+│   ├── Initiate a project             planned
+│   └── Run a PIR                      planned
 ├── I'm a Developer
 │   ├── Write unit tests               planned
 │   ├── Review code                    planned
@@ -44,7 +44,7 @@ node scripts/bootstrap.mjs list roles
 node scripts/bootstrap.mjs list --role business-analyst
 ```
 
-## Try the first skill
+## Try the first workflows
 
 `shape-idea` turns a rough sentence into an evidence-aware idea brief before anyone commits to a specification or build.
 

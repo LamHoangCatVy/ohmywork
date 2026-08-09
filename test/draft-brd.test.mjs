@@ -28,7 +28,6 @@ test("BRD validator rejects missing sections, duplicate IDs, and unsupported evi
   const requirement = "| BR-001 | A second requirement. | Another rationale. | Claimed | Must | Observable result. | Owner |";
   const invalid = base
     .replace("## Data and reporting", "## Reporting")
-    .replace("## Data and reporting", "## Reporting")
     .replace("## Business requirements\n", `## Business requirements\n\n${requirement}\n`);
   const result = validateBrd(invalid);
   assert.equal(result.valid, false);
