@@ -2,7 +2,7 @@
   "$schema": "./contracts/catalog.schema.json",
   "schemaVersion": "0.2.0",
   "name": "ohmywork",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Open work skills that plug into the AI agent you already use.",
   "roles": [
     {
@@ -38,6 +38,12 @@
       "id": "write-user-stories",
       "path": ".agents/skills/write-user-stories",
       "manifest": ".agents/skills/write-user-stories/capability.json",
+      "maturity": "experimental"
+    },
+    {
+      "id": "define-acceptance-criteria",
+      "path": ".agents/skills/define-acceptance-criteria",
+      "manifest": ".agents/skills/define-acceptance-criteria/capability.json",
       "maturity": "experimental"
     }
   ]

@@ -15,7 +15,7 @@ OhMyWork
 ├── I'm a Product Owner
 │   ├── Shape an idea                         available · experimental
 │   ├── Write user stories                    available · experimental
-│   ├── Define acceptance criteria            planned
+│   ├── Define acceptance criteria            available · experimental
 │   ├── Prioritize a backlog                  planned
 │   └── Plan a product review                 planned
 ├── I'm a Project Manager
@@ -60,6 +60,13 @@ Users browse this tree. Agents still discover independent skills from `.agents/s
     assets/user-stories-template.md
     references/story-quality.md
     scripts/validate-user-stories.mjs
+
+  define-acceptance-criteria/
+    SKILL.md
+    capability.json
+    assets/acceptance-criteria-template.md
+    references/gherkin-quality.md
+    scripts/validate-acceptance-criteria.mjs
 
   initiate-project/
     SKILL.md
@@ -165,7 +172,7 @@ The portable skill describes the workflow and quality gate. Host-specific integr
 
 1. `draft-brd` — available experimentally; validate it on real Business Analyst scenarios.
 2. `write-user-stories` — available experimentally; validate vertical slicing and Product Owner handoff.
-3. `define-acceptance-criteria` — make business rules and scenarios testable without bloating story authoring.
+3. `define-acceptance-criteria` — available experimentally; validate business rules, Gherkin, and story coverage.
 4. `initiate-project` and `run-pir` — complete the first project-management loop.
 5. `write-unit-tests` with Vitest, Jest, and pytest references — prove framework routing.
 6. `create-docx`, `build-xlsx`, and `create-pptx` — prove binary artifact generation and visual verification.

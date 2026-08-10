@@ -1,0 +1,4 @@
+interface:
+  display_name: "Define Acceptance Criteria"
+  short_description: "Turn user stories into testable business behavior"
+  default_prompt: "Use $define-acceptance-criteria to turn these user stories into traceable business rules and Given-When-Then scenarios."

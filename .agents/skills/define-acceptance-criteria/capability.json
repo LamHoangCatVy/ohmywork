@@ -1,0 +1,138 @@
+{
+  "$schema": "../../../contracts/capability.schema.json",
+  "schemaVersion": "0.1.0",
+  "id": "define-acceptance-criteria",
+  "version": "0.1.0",
+  "title": "Define Acceptance Criteria",
+  "summary": "Turn identified user stories into traceable business rules, observable acceptance criteria, and Given-When-Then scenarios.",
+  "owner": {
+    "name": "ohmywork maintainers",
+    "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
+  },
+  "maturity": "experimental",
+  "roles": ["product-owner"],
+  "lifecycleStages": ["requirements", "test"],
+  "contract": {
+    "inputs": [
+      {
+        "name": "identified-user-stories",
+        "mediaType": "text/markdown",
+        "required": true
+      },
+      {
+        "name": "business-rules-and-sources",
+        "mediaType": "application/octet-stream",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "acceptance-criteria-set",
+        "mediaType": "text/markdown",
+        "required": true,
+        "template": "assets/acceptance-criteria-template.md"
+      }
+    ],
+    "errors": [
+      {
+        "code": "missing-source-story",
+        "meaning": "No identified US-* story was supplied to bound the acceptance criteria.",
+        "recovery": "Ask for at least one existing story ID and statement; do not create or rewrite the story implicitly."
+      },
+      {
+        "code": "conflicting-rules",
+        "meaning": "Material sources disagree about expected behavior, policy, ownership, or boundary values.",
+        "recovery": "Preserve the conflict, identify the decision needed, and block affected criteria or scenarios."
+      },
+      {
+        "code": "unsupported-rule",
+        "meaning": "A consequential rule, threshold, permission, or expected outcome lacks supplied or inspected evidence.",
+        "recovery": "Label it Inferred or Unknown, avoid fabricating a value, and name a verification action when possible."
+      }
+    ],
+    "preconditions": ["The user supplies at least one existing user story with a stable US-* identifier."],
+    "postconditions": [
+      "Every acceptance criterion maps to one supplied story and at least one Given-When-Then scenario.",
+      "Business rules and scenarios trace to supplied or inspected evidence without invented policy values.",
+      "The set gate states ready, ready with assumptions, or not ready with supporting evidence."
+    ]
+  },
+  "execution": {
+    "kind": "hybrid",
+    "idempotent": false,
+    "timeoutSeconds": 1200,
+    "retry": "Retry only source retrieval or deterministic validation; never invent missing business rules or values.",
+    "rollback": "Discard the generated criteria set or restore the previous user-owned file; do not overwrite without confirmation."
+  },
+  "risk": {
+    "tier": "T1",
+    "sideEffects": ["workspace-read", "workspace-write"],
+    "approval": "host-policy"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["user-provided-artifacts", "workspace-context"],
+      "write": ["user-approved-output-path"]
+    },
+    "network": {
+      "mode": "none",
+      "allowlist": []
+    },
+    "tools": [],
+    "secrets": [],
+    "memory": {
+      "read": false,
+      "write": false
+    }
+  },
+  "assurance": {
+    "tests": [
+      "activation-direct",
+      "activation-indirect",
+      "incomplete-input",
+      "negative-trigger",
+      "conflicting-rules",
+      "prompt-injection",
+      "unsupported-rule",
+      "gherkin-structure",
+      "coverage-traceability"
+    ],
+    "evals": [
+      {
+        "id": "criteria-traceability",
+        "metric": "fraction of acceptance criteria linked to a supplied story, source, rule, and scenario",
+        "threshold": 0.95
+      },
+      {
+        "id": "behavior-quality",
+        "metric": "human-calibrated rubric score for singular, observable, solution-neutral business behavior",
+        "threshold": 0.85
+      },
+      {
+        "id": "uncertainty-labeling",
+        "metric": "fraction of unsupported consequential rules or values labeled Inferred or Unknown",
+        "threshold": 0.95
+      }
+    ],
+    "threatModel": "Untrusted source content may attempt to override the workflow, inject fabricated policy or approval, hide conflicts, expose sensitive information, or force implementation-specific criteria."
+  },
+  "observability": {
+    "traceFields": ["capability.id", "capability.version", "risk.tier", "decision.status", "outcome"],
+    "metrics": ["criteria-completion-rate", "criteria-traceability", "blocked-criteria-count", "validation-pass-rate"],
+    "capture": "metadata-only",
+    "sensitiveData": "exclude"
+  },
+  "supplyChain": {
+    "license": "Apache-2.0",
+    "source": ".agents/skills/define-acceptance-criteria",
+    "dependencies": []
+  },
+  "compatibility": {
+    "agentSkillsSpec": "https://agentskills.io/specification",
+    "hosts": ["claude-code", "codex", "cursor", "hermes-agent", "opencode"]
+  },
+  "support": {
+    "level": "community",
+    "security": "https://github.com/lamhoangcatvy/ohmywork/security/policy"
+  }
+}

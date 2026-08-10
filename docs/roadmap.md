@@ -25,7 +25,7 @@ Scope:
 - Capability/catalog JSON Schema 2020-12 contracts.
 - Risk tiers, permission declarations, assurance, observability, ownership, and licensing.
 - Safe `init`, `doctor`, catalog validator, and collision/integrity tests.
-- Three reference skills: `shape-idea`, `draft-brd`, and `write-user-stories`.
+- Four reference skills: `shape-idea`, `draft-brd`, `write-user-stories`, and `define-acceptance-criteria`.
 - Open-source community and security baseline.
 
 Acceptance:

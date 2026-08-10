@@ -19,16 +19,18 @@ async function fixtureRoot(t) {
 test("init creates idempotent Claude and Hermes projections", async (t) => {
   const root = await fixtureRoot(t);
   const first = await initializeProject({ root });
-  assert.equal(first.results.filter((result) => result.status === "created").length, 6);
+  assert.equal(first.results.filter((result) => result.status === "created").length, 8);
   assert.equal((await lstat(path.join(root, ".claude/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/write-user-stories"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".claude/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/write-user-stories"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".hermes/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
 
   const second = await initializeProject({ root });
-  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 6);
+  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 8);
   const doctor = await doctorProject({ root });
   assert.equal(doctor.healthy, true, doctor.issues.join("\n"));
 });
@@ -71,6 +73,10 @@ test("discovery groups portable skills into role views", async () => {
 
   const filtered = await discoverCatalog({ roles: ["product-owner"] });
   assert.deepEqual(filtered.roles.map((role) => role.id), ["product-owner"]);
-  assert.deepEqual(filtered.skills.map((skill) => skill.id), ["shape-idea", "write-user-stories"]);
+  assert.deepEqual(filtered.skills.map((skill) => skill.id), [
+    "shape-idea",
+    "write-user-stories",
+    "define-acceptance-criteria",
+  ]);
   await assert.rejects(discoverCatalog({ roles: ["imaginary-role"] }), /Unknown role/);
 });

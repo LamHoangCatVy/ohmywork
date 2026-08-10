@@ -17,7 +17,7 @@ OhMyWork
 ├── I'm a Product Owner
 │   ├── Shape an idea                  available · experimental
 │   ├── Write user stories             available · experimental
-│   └── Define acceptance criteria     planned
+│   └── Define acceptance criteria     available · experimental
 ├── I'm a Project Manager
 │   ├── Shape an idea                  available · experimental
 │   ├── Initiate a project             planned
@@ -94,6 +94,20 @@ product context, BRD, or requirement set
 - Other supported hosts: `/write-user-stories` or ask to “Turn these requirements into user stories.”
 - Output template: stable story IDs, value, source evidence, proposed priority, dependencies, acceptance intent, and readiness.
 
+Refine an existing `US-*` story without rewriting it:
+
+```text
+US-* stories plus supplied business rules
+  → define-acceptance-criteria
+  → RULE-* business rules
+  → AC-US-*-* observable criteria
+  → SC-US-*-* Given-When-Then scenarios and coverage
+```
+
+- Codex: `$define-acceptance-criteria`
+- Other supported hosts: `/define-acceptance-criteria` or ask to “Write acceptance criteria for US-014.”
+- Missing thresholds, policies, or approvals stay visible as blocked unknowns rather than plausible inventions.
+
 ## Plug in the bundle
 
 ### Work from the source repository
@@ -146,6 +160,12 @@ contracts/                           Machine-readable trust schemas
     assets/user-stories-template.md  Reusable story-set template
     references/story-quality.md      Vertical-slicing and INVEST guidance
     scripts/validate-user-stories.mjs
+  define-acceptance-criteria/
+    SKILL.md                         Product Owner behavior-refinement workflow
+    capability.json                  Inputs, outputs, permissions, and evals
+    assets/acceptance-criteria-template.md
+    references/gherkin-quality.md    Business-rule and scenario guidance
+    scripts/validate-acceptance-criteria.mjs
 scripts/
   bootstrap.mjs                      Bundle discovery, projections, and doctor
   validate.mjs                       Catalog, skill, and trust validation
