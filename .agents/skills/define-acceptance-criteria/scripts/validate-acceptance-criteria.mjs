@@ -26,7 +26,11 @@ function tableCells(line) {
 }
 
 function section(markdown, title) {
-  return markdown.match(new RegExp(`^## ${escapeRegExp(title)}\\s+([\\s\\S]*?)(?=\\n## |$)`, "m"))?.[1] ?? "";
+  const heading = new RegExp(`^## ${escapeRegExp(title)}\\s*$`, "m").exec(markdown);
+  if (!heading) return "";
+  const remainder = markdown.slice(heading.index + heading[0].length).replace(/^\r?\n/, "");
+  const nextHeading = remainder.search(/^##\s+/m);
+  return nextHeading === -1 ? remainder : remainder.slice(0, nextHeading);
 }
 
 function hasEvidence(value) {
@@ -102,12 +106,16 @@ export function validateAcceptanceCriteria(markdown) {
   }
 
   const scenarioSection = section(markdown, "Given-When-Then scenarios");
-  const scenarioPattern = /^###\s+(SC-(US-[0-9]{3,})-[0-9]{2,})\s+[^\n]*\n([\s\S]*?)(?=^###\s+SC-|\n## |$)/gm;
+  const scenarioPattern = /^###\s+(SC-(US-[0-9]{3,})-[0-9]{2,})\s+[^\n]*$/gm;
+  const scenarioHeadings = [...scenarioSection.matchAll(scenarioPattern)];
   const scenarioIds = new Set();
   const coveredCriteria = new Set();
-  let match;
-  while ((match = scenarioPattern.exec(scenarioSection)) !== null) {
-    const [, scenarioId, storyId, body] = match;
+  for (let index = 0; index < scenarioHeadings.length; index += 1) {
+    const heading = scenarioHeadings[index];
+    const [, scenarioId, storyId] = heading;
+    const bodyStart = heading.index + heading[0].length;
+    const bodyEnd = scenarioHeadings[index + 1]?.index ?? scenarioSection.length;
+    const body = scenarioSection.slice(bodyStart, bodyEnd);
     if (scenarioIds.has(scenarioId)) errors.push(`duplicate scenario id '${scenarioId}'`);
     scenarioIds.add(scenarioId);
     if (!storyIds.has(storyId)) errors.push(`${scenarioId}: references unknown story '${storyId}'`);
