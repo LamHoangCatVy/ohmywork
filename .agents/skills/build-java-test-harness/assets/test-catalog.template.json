@@ -27,10 +27,18 @@
       "capabilities": ["critical-business-flow"],
       "interfaces": ["public-service-interface"],
       "tags": ["critical", "smoke", "regression"],
-      "source": "packs/critical-business-flow/src/test/java/Flow001Test.java",
+      "source": {
+        "kind": "managed-pack",
+        "path": "packs/critical-business-flow/src/test/java/Flow001Test.java",
+        "selector": "example.Flow001Test"
+      },
       "timeoutSeconds": 60,
       "sideEffects": ["external-write"],
-      "cleanup": "CLEANUP-FLOW-001"
+      "cleanup": "CLEANUP-FLOW-001",
+      "revision": {
+        "contentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "lastChangeCommit": "example-commit"
+      }
     }
   ]
 }

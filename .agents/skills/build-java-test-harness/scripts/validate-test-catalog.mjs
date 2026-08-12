@@ -11,6 +11,8 @@ const TYPES = new Set(["unit", "component", "integration", "contract", "system",
 const STATUSES = new Set(["active", "quarantined", "deprecated", "retired"]);
 const RISKS = new Set(["low", "medium", "high", "critical"]);
 const SIDE_EFFECTS = new Set(["none", "workspace-write", "network-read", "external-write"]);
+const SOURCE_KINDS = new Set(["managed-pack", "application-bound"]);
+const DIGEST = /^sha256:[0-9a-f]{64}$/;
 
 function uniqueStrings(value) {
   return Array.isArray(value) && value.every((item) => typeof item === "string" && item.length > 0) && new Set(value).size === value.length;
@@ -65,8 +67,21 @@ export function validateTestCatalog(catalog, { now = new Date() } = {}) {
     if ((test.requirements?.length ?? 0) === 0 && (test.capabilities?.length ?? 0) === 0) {
       errors.push(`${label}: link at least one requirement or capability`);
     }
-    if (!safeRelativePath(test.source) || !test.source.startsWith("packs/")) {
-      errors.push(`${label}: source must be a safe relative path under packs/`);
+    const source = test.source;
+    if (!source || typeof source !== "object" || Array.isArray(source)) {
+      errors.push(`${label}: source must describe a managed-pack or application-bound test`);
+    } else {
+      if (!SOURCE_KINDS.has(source.kind)) errors.push(`${label}: unsupported source kind '${source.kind ?? "missing"}'`);
+      if (!safeRelativePath(source.path)) errors.push(`${label}: source.path must be a safe relative path`);
+      if (source.kind === "managed-pack" && !source.path?.startsWith("packs/")) {
+        errors.push(`${label}: managed-pack source.path must be under packs/`);
+      }
+      if (source.kind === "application-bound" && !SYSTEM_ID.test(source.repository ?? "")) {
+        errors.push(`${label}: application-bound source.repository must be a registered kebab-case repository id`);
+      }
+      if (typeof source.selector !== "string" || source.selector.trim().length === 0) {
+        errors.push(`${label}: source.selector is required`);
+      }
     }
     if (!Number.isInteger(test.timeoutSeconds) || test.timeoutSeconds < 1 || test.timeoutSeconds > 86400) {
       errors.push(`${label}: timeoutSeconds must be an integer from 1 to 86400`);
@@ -93,6 +108,12 @@ export function validateTestCatalog(catalog, { now = new Date() } = {}) {
       errors.push(`${label}: deprecated test requires deprecation rationale`);
     }
     if (test.status === "retired") warnings.push(`${label}: retired tests should remain only as catalog tombstones`);
+    if (!DIGEST.test(test.revision?.contentDigest ?? "")) {
+      errors.push(`${label}: revision.contentDigest must be a sha256 digest`);
+    }
+    if (typeof test.revision?.lastChangeCommit !== "string" || test.revision.lastChangeCommit.trim().length === 0) {
+      errors.push(`${label}: revision.lastChangeCommit is required`);
+    }
   }
 
   return { valid: errors.length === 0, errors, warnings, testCount: ids.size };

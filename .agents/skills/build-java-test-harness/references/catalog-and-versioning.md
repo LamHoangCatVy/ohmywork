@@ -11,13 +11,15 @@ Require:
 - title and test type;
 - owner and risk;
 - requirement or capability trace;
-- source path;
+- source kind, safe relative path, and executable selector;
 - suite tags;
 - timeout;
 - side effects and cleanup;
 - lifecycle status.
 
 Generate a content digest and last-change commit during catalog assembly. Do not ask authors to increment a version field on every test edit.
+
+For a `managed-pack` test, resolve the source under `packs/`. For an `application-bound` test, resolve the registered repository ID, checked-out application commit, relative path, and JUnit selector. Do not duplicate the test body in the external manager merely to catalog it.
 
 ## Version three release units
 

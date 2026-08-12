@@ -44,6 +44,15 @@ enterprise-test-manager/
 
 Organize packs by stable behavior and customer journey. Do not mirror source packages, deployment units, or team ownership boundaries.
 
+## Onboard without duplicating tests
+
+Support two catalog source kinds:
+
+- `managed-pack`: the canonical test lives under the external manager's `packs/` tree;
+- `application-bound`: an existing test remains canonical in an approved application repository and the manager stores a repository ID, relative path, and JUnit selector.
+
+Start legacy onboarding with `application-bound` entries. The runner checks out the recorded application commit and invokes the existing selector through its compatible build adapter. If a test is later migrated into a managed pack, retire the binding in the same reviewed change so only one canonical implementation remains active.
+
 ## Use a control plane
 
 The control plane owns:
