@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "systemId": "example-system",
+  "packVersion": "0.1.0",
+  "framework": {
+    "coordinates": "com.example.testing:test-manager-core",
+    "version": "1.0.0"
+  },
+  "source": {
+    "applicationRef": "<application-commit>",
+    "testPackRef": "<test-pack-commit>"
+  },
+  "policies": {
+    "defaultSelection": "impacted-plus-smoke",
+    "fallbackSelection": "capability-regression",
+    "productionExecution": "forbidden"
+  },
+  "tests": [
+    {
+      "id": "FLOW-001",
+      "title": "Complete a critical business flow",
+      "type": "system",
+      "status": "active",
+      "risk": "critical",
+      "owner": "quality-platform",
+      "requirements": ["AC-US-001-01"],
+      "capabilities": ["critical-business-flow"],
+      "interfaces": ["public-service-interface"],
+      "tags": ["critical", "smoke", "regression"],
+      "source": "packs/critical-business-flow/src/test/java/Flow001Test.java",
+      "timeoutSeconds": 60,
+      "sideEffects": ["external-write"],
+      "cleanup": "CLEANUP-FLOW-001"
+    }
+  ]
+}

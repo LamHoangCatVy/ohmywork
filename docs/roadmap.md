@@ -25,7 +25,7 @@ Scope:
 - Capability/catalog JSON Schema 2020-12 contracts.
 - Risk tiers, permission declarations, assurance, observability, ownership, and licensing.
 - Safe `init`, `doctor`, catalog validator, and collision/integrity tests.
-- Four reference skills: `shape-idea`, `draft-brd`, `write-user-stories`, and `define-acceptance-criteria`.
+- Five reference skills: `shape-idea`, `draft-brd`, `write-user-stories`, `define-acceptance-criteria`, and `build-java-test-harness`.
 - Open-source community and security baseline.
 
 Acceptance:
@@ -59,7 +59,7 @@ Acceptance:
 Scope:
 
 - Repository bootstrap, implementation, refactoring, code review, migrations, IaC, feature flags, documentation-as-code, and local developer experience.
-- Developer skills for framework-aware unit testing, code review, safe refactoring, and technical documentation.
+- Developer skills for a centralized Java test control plane, framework-aware unit testing, code review, safe refactoring, and technical documentation.
 - Sandboxed deterministic tests and agent evals: unit, property, integration, contract, end-to-end, accessibility, performance, fuzz, recovery, tool selection, trajectory, grounding, refusal, prompt injection, privilege, and memory-poisoning cases.
 
 Acceptance:

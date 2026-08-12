@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "systemId": "<stable-system-id>",
+  "testManager": {
+    "repository": "<approved-test-manager-repository>",
+    "catalogPath": "test-catalog/catalog.json",
+    "packRef": "<immutable-tag-or-commit>"
+  },
+  "impact": {
+    "defaultPolicy": "impacted-plus-smoke",
+    "fallbackPolicy": "capability-regression",
+    "fullRegressionPolicy": "scheduled-and-release"
+  },
+  "traceability": {
+    "requirements": ["<approved-requirement-source>"],
+    "contracts": ["<approved-contract-source>"]
+  },
+  "execution": {
+    "production": "forbidden",
+    "allowedEnvironments": ["<approved-test-environment>"],
+    "externalWrites": "explicit-approval"
+  }
+}

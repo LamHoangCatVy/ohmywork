@@ -2,7 +2,7 @@
   "$schema": "./contracts/catalog.schema.json",
   "schemaVersion": "0.2.0",
   "name": "ohmywork",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Open work skills that plug into the AI agent you already use.",
   "roles": [
     {
@@ -19,6 +19,11 @@
       "id": "project-manager",
       "title": "Project Manager",
       "summary": "Turn agreed outcomes into coordinated plans, decisions, and learning loops."
+    },
+    {
+      "id": "developer",
+      "title": "Developer",
+      "summary": "Turn approved behavior and software changes into maintainable, verifiable systems."
     }
   ],
   "skills": [
@@ -44,6 +49,12 @@
       "id": "define-acceptance-criteria",
       "path": ".agents/skills/define-acceptance-criteria",
       "manifest": ".agents/skills/define-acceptance-criteria/capability.json",
+      "maturity": "experimental"
+    },
+    {
+      "id": "build-java-test-harness",
+      "path": ".agents/skills/build-java-test-harness",
+      "manifest": ".agents/skills/build-java-test-harness/capability.json",
       "maturity": "experimental"
     }
   ]

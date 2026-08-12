@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Java Test Harness"
+  short_description: "Build a governed Java system-test control plane"
+  default_prompt: "Use $build-java-test-harness to design or evolve a centralized Java test manager with impact analysis and versioned evidence."

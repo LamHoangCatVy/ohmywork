@@ -19,18 +19,20 @@ async function fixtureRoot(t) {
 test("init creates idempotent Claude and Hermes projections", async (t) => {
   const root = await fixtureRoot(t);
   const first = await initializeProject({ root });
-  assert.equal(first.results.filter((result) => result.status === "created").length, 8);
+  assert.equal(first.results.filter((result) => result.status === "created").length, 10);
   assert.equal((await lstat(path.join(root, ".claude/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/write-user-stories"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".claude/skills/build-java-test-harness"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/write-user-stories"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".hermes/skills/build-java-test-harness"))).isSymbolicLink(), true);
 
   const second = await initializeProject({ root });
-  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 8);
+  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 10);
   const doctor = await doctorProject({ root });
   assert.equal(doctor.healthy, true, doctor.issues.join("\n"));
 });
@@ -63,7 +65,7 @@ test("discovery groups portable skills into role views", async () => {
   const discovery = await discoverCatalog();
   assert.deepEqual(
     discovery.roles.map((role) => role.id),
-    ["business-analyst", "product-owner", "project-manager"],
+    ["business-analyst", "product-owner", "project-manager", "developer"],
   );
   assert.deepEqual(discovery.roles[0].skills, ["shape-idea", "draft-brd"]);
   assert.equal(
@@ -78,5 +80,9 @@ test("discovery groups portable skills into role views", async () => {
     "write-user-stories",
     "define-acceptance-criteria",
   ]);
+
+  const developer = await discoverCatalog({ roles: ["developer"] });
+  assert.deepEqual(developer.roles.map((role) => role.id), ["developer"]);
+  assert.deepEqual(developer.skills.map((skill) => skill.id), ["build-java-test-harness"]);
   await assert.rejects(discoverCatalog({ roles: ["imaginary-role"] }), /Unknown role/);
 });

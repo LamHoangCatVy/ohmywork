@@ -26,6 +26,7 @@ OhMyWork
 │   ├── Prepare a status report               planned
 │   └── Run a post-implementation review      planned
 ├── I'm a Developer
+│   ├── Build a Java test harness             available · experimental
 │   ├── Write unit tests                      planned
 │   ├── Review code                           planned
 │   ├── Refactor code safely                  planned
@@ -67,6 +68,18 @@ Users browse this tree. Agents still discover independent skills from `.agents/s
     assets/acceptance-criteria-template.md
     references/gherkin-quality.md
     scripts/validate-acceptance-criteria.mjs
+
+  build-java-test-harness/
+    SKILL.md
+    capability.json
+    assets/project-descriptor.template.json
+    assets/test-catalog.template.json
+    assets/impact-report-template.md
+    references/platform-architecture.md
+    references/catalog-and-versioning.md
+    references/impact-analysis.md
+    references/java-execution.md
+    scripts/validate-test-catalog.mjs
 
   initiate-project/
     SKILL.md
@@ -121,31 +134,26 @@ Role membership is many-to-many. For example:
 | `build-xlsx` | yes | yes | yes | yes |
 | `create-pptx` | yes | yes | yes | yes |
 | `write-unit-tests` | — | — | — | yes |
+| `build-java-test-harness` | — | — | — | yes |
 
 The role tree is derived from `catalog.json` role metadata plus each `capability.json` membership. It never copies skill content into role folders.
 
-## Framework-aware unit testing
+## Centralized Java system testing
 
-`write-unit-tests` should remain one outcome-focused skill rather than one top-level skill per framework. Its workflow will:
+`build-java-test-harness` manages an external, versioned test control plane rather than adding tests beside every implementation area. Its workflow:
 
-1. inspect the repository to identify language, framework, test runner, and local conventions;
-2. load only the matching reference, such as `references/pytest.md` or `references/vitest.md`;
-3. identify behavior and edge cases before writing tests;
-4. preserve the project's existing test style and dependency choices;
-5. run the smallest relevant test command;
-6. report coverage gaps without claiming unsupported coverage improvements.
+1. separates reusable Java framework code from system-specific test packs and generated evidence;
+2. gives every test a stable ID, owner, risk, traceability, lifecycle, effects, timeout, and cleanup plan;
+3. maps source, configuration, contract, data, and requirement changes through an evidence graph;
+4. selects explainable impacted tests plus a conservative smoke or regression safety net;
+5. versions the framework, test-pack release, individual test digest, and execution manifest independently;
+6. refuses to rewrite expected behavior without an approved requirement, criterion, defect, contract, or decision.
 
-Create a separate skill only when a testing family has a materially different outcome—for example browser end-to-end testing, performance testing, or contract testing.
+The catalog is generated from annotations and descriptors, then validated deterministically. Tests are organized by stable behavior and customer journey rather than mirroring source packages or deployment structure.
 
-Initial unit-test references should cover:
+`write-unit-tests` remains a separate planned skill for isolated code-level behavior. Browser end-to-end, performance, security, and exploratory testing remain separate outcomes even when their results are governed by the same test manager.
 
-- JavaScript and TypeScript: Vitest, Jest, Node test runner;
-- Python: pytest and unittest;
-- Java and Kotlin: JUnit;
-- .NET: xUnit and NUnit;
-- Go: the standard `testing` package;
-- Ruby: RSpec;
-- PHP: PHPUnit.
+The first external harness is Java-first and uses JUnit Platform as the execution boundary, with Maven and Gradle as adapters rather than hard-coded ownership models.
 
 ## Document, workbook, and slide skills
 
@@ -173,7 +181,8 @@ The portable skill describes the workflow and quality gate. Host-specific integr
 1. `draft-brd` — available experimentally; validate it on real Business Analyst scenarios.
 2. `write-user-stories` — available experimentally; validate vertical slicing and Product Owner handoff.
 3. `define-acceptance-criteria` — available experimentally; validate business rules, Gherkin, and story coverage.
-4. `initiate-project` and `run-pir` — complete the first project-management loop.
-5. `write-unit-tests` with Vitest, Jest, and pytest references — prove framework routing.
-6. `create-docx`, `build-xlsx`, and `create-pptx` — prove binary artifact generation and visual verification.
-7. Expand framework references and role packs only after the first workflows pass their declared evals.
+4. `build-java-test-harness` — available experimentally; validate catalog, impact selection, versioning, execution, and evidence on a real change set.
+5. `initiate-project` and `run-pir` — complete the first project-management loop.
+6. `write-unit-tests` — add isolated language-aware code testing only after the central governance boundary is proven.
+7. `create-docx`, `build-xlsx`, and `create-pptx` — prove binary artifact generation and visual verification.
+8. Expand framework references and role packs only after the first workflows pass their declared evals.

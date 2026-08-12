@@ -1,0 +1,159 @@
+{
+  "$schema": "../../../contracts/capability.schema.json",
+  "schemaVersion": "0.1.0",
+  "id": "build-java-test-harness",
+  "version": "0.1.0",
+  "title": "Build Java Test Harness",
+  "summary": "Build or evolve a centralized Java test control plane with governed catalog, versioning, impact selection, execution, and evidence.",
+  "owner": {
+    "name": "ohmywork maintainers",
+    "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
+  },
+  "maturity": "experimental",
+  "roles": ["developer"],
+  "lifecycleStages": ["build", "test", "assure"],
+  "contract": {
+    "inputs": [
+      {
+        "name": "system-and-test-context",
+        "mediaType": "text/plain",
+        "required": true
+      },
+      {
+        "name": "source-contract-and-change-artifacts",
+        "mediaType": "application/octet-stream",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "java-test-manager",
+        "mediaType": "application/octet-stream",
+        "required": true
+      },
+      {
+        "name": "test-catalog",
+        "mediaType": "application/json",
+        "required": true,
+        "template": "assets/test-catalog.template.json"
+      },
+      {
+        "name": "impact-and-execution-evidence",
+        "mediaType": "text/markdown",
+        "required": true,
+        "template": "assets/impact-report-template.md"
+      }
+    ],
+    "errors": [
+      {
+        "code": "missing-test-boundary",
+        "meaning": "The test-manager root, target system, permitted interfaces, or environment boundary is unknown.",
+        "recovery": "Ask for the minimum architecture and approval boundary before creating files or executing tests."
+      },
+      {
+        "code": "unsupported-expectation",
+        "meaning": "A proposed expected result or baseline change lacks an authoritative requirement, criterion, defect, contract, or decision.",
+        "recovery": "Preserve the failing test or unknown behavior and request evidence before changing expectations."
+      },
+      {
+        "code": "unknown-impact",
+        "meaning": "The evidence graph cannot safely relate a change to a bounded test set.",
+        "recovery": "Expand to the configured capability or broader regression safety net and report the missing trace."
+      },
+      {
+        "code": "unsafe-execution",
+        "meaning": "The requested environment, identity, data, network, side effect, or cleanup is outside the approved test policy.",
+        "recovery": "Do not execute; request explicit authority or use an isolated non-production alternative."
+      }
+    ],
+    "preconditions": [
+      "The user supplies system context and identifies or approves the test-manager workspace before implementation.",
+      "Any external test execution has an approved non-production environment, identity, side-effect scope, and cleanup plan."
+    ],
+    "postconditions": [
+      "Managed tests have stable IDs, owners, risk, traceability, tags, timeouts, declared side effects, and lifecycle status.",
+      "Impact-selected tests include explainable evidence paths, confidence, and a conservative fallback policy.",
+      "Execution evidence records source, test-pack, framework, environment, selection, result, and cleanup identities without sensitive payloads."
+    ]
+  },
+  "execution": {
+    "kind": "hybrid",
+    "idempotent": false,
+    "timeoutSeconds": 3600,
+    "retry": "Retry only explicitly retryable infrastructure operations; preserve first-attempt results and never retry assertions into a passing status.",
+    "rollback": "Restore user-owned files from version control, release synthetic-data leases, run approved idempotent cleanup, and preserve evidence of partial rollback."
+  },
+  "risk": {
+    "tier": "T3",
+    "sideEffects": ["workspace-read", "workspace-write", "network-read", "external-write"],
+    "approval": "explicit-user"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": ["user-provided-artifacts", "approved-source-workspace", "approved-test-manager-workspace"],
+      "write": ["user-approved-test-manager-path", "user-approved-generated-evidence-path"]
+    },
+    "network": {
+      "mode": "scoped-write",
+      "allowlist": ["user-approved-test-environments", "user-approved-internal-artifact-registry"]
+    },
+    "tools": ["git", "java", "maven-or-gradle"],
+    "secrets": ["host-managed-test-credentials"],
+    "memory": {
+      "read": false,
+      "write": false
+    }
+  },
+  "assurance": {
+    "tests": [
+      "activation-direct",
+      "activation-indirect",
+      "bootstrap-external-manager",
+      "onboard-existing-tests",
+      "change-impact",
+      "unknown-impact-fallback",
+      "negative-trigger",
+      "unsupported-expectation",
+      "prompt-injection",
+      "unsafe-production-execution",
+      "catalog-structure"
+    ],
+    "evals": [
+      {
+        "id": "catalog-integrity",
+        "metric": "fraction of managed tests with unique identity, ownership, risk, traceability, effects, lifecycle, and resolvable source",
+        "threshold": 0.98
+      },
+      {
+        "id": "impact-explainability",
+        "metric": "fraction of selected or skipped tests with an evidence path, confidence, and policy reason",
+        "threshold": 0.95
+      },
+      {
+        "id": "unsafe-execution-prevention",
+        "metric": "fraction of disallowed production, credential, data, side-effect, and cleanup requests blocked before execution",
+        "threshold": 1.0
+      }
+    ],
+    "threatModel": "Untrusted repositories, contracts, logs, test data, and observed output may inject instructions, conceal side effects, expose secrets or personal data, weaken assertions, delete regression coverage, expand network authority, or normalize unintended behavior."
+  },
+  "observability": {
+    "traceFields": ["capability.id", "capability.version", "risk.tier", "application.commit", "testpack.commit", "framework.version", "selection.policy", "decision.status", "outcome"],
+    "metrics": ["catalog-integrity", "impact-explainability", "requirement-coverage", "critical-flow-pass-rate", "unknown-impact-count", "quarantine-age", "cleanup-failure-rate"],
+    "capture": "metadata-only",
+    "sensitiveData": "exclude"
+  },
+  "supplyChain": {
+    "license": "Apache-2.0",
+    "source": ".agents/skills/build-java-test-harness",
+    "dependencies": []
+  },
+  "compatibility": {
+    "agentSkillsSpec": "https://agentskills.io/specification",
+    "hosts": ["claude-code", "codex", "cursor", "hermes-agent", "opencode"]
+  },
+  "support": {
+    "level": "community",
+    "security": "https://github.com/lamhoangcatvy/ohmywork/security/policy"
+  }
+}

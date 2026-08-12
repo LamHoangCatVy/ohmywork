@@ -37,3 +37,11 @@ test("list JSON exposes role and skill metadata", async () => {
     "define-acceptance-criteria",
   ]);
 });
+
+test("list exposes the first Developer test-management workflow", async () => {
+  const { stdout, stderr } = await runCli("list", "--role", "developer");
+  assert.equal(stderr, "");
+  assert.match(stdout, /I'm a Developer/);
+  assert.match(stdout, /build-java-test-harness \[experimental\]/);
+  assert.match(stdout, /centralized Java test control plane/);
+});

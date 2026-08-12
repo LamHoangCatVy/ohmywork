@@ -23,6 +23,7 @@ OhMyWork
 │   ├── Initiate a project             planned
 │   └── Run a PIR                      planned
 ├── I'm a Developer
+│   ├── Build a Java test harness      available · experimental
 │   ├── Write unit tests               planned
 │   ├── Review code                    planned
 │   ├── Refactor code                  planned
@@ -87,7 +88,7 @@ The first Product Owner workflow turns an outcome or BRD into small, traceable v
 product context, BRD, or requirement set
   → write-user-stories
   → refinement-ready story map and user-story set
-  → define-acceptance-criteria (planned next)
+  → define-acceptance-criteria
 ```
 
 - Codex: `$write-user-stories`
@@ -107,6 +108,21 @@ US-* stories plus supplied business rules
 - Codex: `$define-acceptance-criteria`
 - Other supported hosts: `/define-acceptance-criteria` or ask to “Write acceptance criteria for US-014.”
 - Missing thresholds, policies, or approvals stay visible as blocked unknowns rather than plausible inventions.
+
+Build a centralized Java test control plane outside the implementation under test:
+
+```text
+source changes, contracts, and AC-US-*
+  → build-java-test-harness
+  → governed test catalog and stable test IDs
+  → evidence-backed impact selection
+  → impacted tests plus a smoke safety net
+  → versioned execution and cleanup evidence
+```
+
+- Codex: `$build-java-test-harness`
+- Other supported hosts: `/build-java-test-harness` or ask to “Build a centralized Java test manager for this system.”
+- The skill requires explicit approval before writing an external test repository, installing dependencies, contacting an environment, or running tests with external side effects.
 
 ## Plug in the bundle
 
@@ -166,6 +182,12 @@ contracts/                           Machine-readable trust schemas
     assets/acceptance-criteria-template.md
     references/gherkin-quality.md    Business-rule and scenario guidance
     scripts/validate-acceptance-criteria.mjs
+  build-java-test-harness/
+    SKILL.md                         Developer test-control-plane workflow
+    capability.json                  T3 effects, permissions, evals, and evidence
+    assets/                          Catalog, descriptor, and impact templates
+    references/                      Architecture, impact, versioning, Java execution
+    scripts/validate-test-catalog.mjs
 scripts/
   bootstrap.mjs                      Bundle discovery, projections, and doctor
   validate.mjs                       Catalog, skill, and trust validation
