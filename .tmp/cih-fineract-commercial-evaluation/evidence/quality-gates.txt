@@ -1,0 +1,25 @@
+Evidence transcript: CIH repository quality gates
+Run date: 2026-08-14
+CIH commit: b91f109388e8d58c1e875a92a6d83c786820a500
+
+PASS  python3 scripts/check_layering.py
+      crate layering OK (19 crates)
+
+PASS  python3 scripts/validate-retrieval-production.py --self-test
+PASS  python3 scripts/validate-retrieval-production-soak.py --self-test
+PASS  cargo fmt --all --check
+PASS  cargo clippy --workspace --all-targets -- -D warnings
+PASS  cargo test --workspace
+
+Targeted Java/Spring parser and resolver checks also passed before the full run:
+
+- cih-lang Java and Java-idiom tests: 29 passed
+- cih-parse Java parser tests: 18 passed
+- cih-resolve test suites: passed
+- cih-engine without default features: passed; tests requiring external LLM keys were ignored by upstream design
+
+Packaging observation:
+
+- the macOS arm64 native link emitted duplicate Zstandard-symbol warnings;
+- CIH's upstream CI uses a pinned shared Ladybug Linux runtime;
+- platform packaging requires separate qualification even though tests passed.

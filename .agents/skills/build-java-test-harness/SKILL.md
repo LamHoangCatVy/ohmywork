@@ -40,10 +40,11 @@ Build a governed test control plane outside the implementation under test. Keep 
    - distinguish still-valid tests, tests needing evidence-backed updates, new tests, potentially obsolete tests, and unknown impact.
 8. Read [`references/impact-analysis.md`](references/impact-analysis.md) when implementing or reviewing selection logic. Never use an opaque model judgment as the only reason to skip a test.
 9. Read [`references/java-execution.md`](references/java-execution.md) when creating JUnit Platform integration, Maven or Gradle adapters, coverage collection, test data, concurrency, or execution listeners.
-10. Keep one canonical test and compose suites through tags such as `smoke`, `regression`, `critical`, `contract`, and `resilience`. Do not duplicate a test into suite-specific directories.
-11. Validate the catalog with [`scripts/validate-test-catalog.mjs`](scripts/validate-test-catalog.mjs). Fix errors and preserve warnings with owners or follow-up actions.
-12. When authorized, run the smallest impacted suite plus the required smoke safety net. Full regression remains a scheduled or release gate; impact selection does not replace it.
-13. Record results with [`assets/impact-report-template.md`](assets/impact-report-template.md), including application commit, test-pack commit, framework version, environment fingerprint, selection policy, reasons, coverage, failures, blocked work, and unknown risk.
+10. When evaluating a third-party static-analysis or code-intelligence engine as an impact-evidence provider, read [`references/yummy-cih-fineract-case-study.md`](references/yummy-cih-fineract-case-study.md). Keep such engines behind an adapter and preserve unresolved or contradictory evidence.
+11. Keep one canonical test and compose suites through tags such as `smoke`, `regression`, `critical`, `contract`, and `resilience`. Do not duplicate a test into suite-specific directories.
+12. Validate the catalog with [`scripts/validate-test-catalog.mjs`](scripts/validate-test-catalog.mjs). Fix errors and preserve warnings with owners or follow-up actions.
+13. When authorized, run the smallest impacted suite plus the required smoke safety net. Full regression remains a scheduled or release gate; impact selection does not replace it.
+14. Record results with [`assets/impact-report-template.md`](assets/impact-report-template.md), including application commit, test-pack commit, framework version, environment fingerprint, selection policy, reasons, coverage, failures, blocked work, and unknown risk.
 
 ## Change policy
 

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "0.1.0",
+  "bundleId": "ohmywork-cih-fineract-commercial-evaluation",
+  "runDate": "2026-08-14",
+  "purpose": "Evaluate CIH as an optional impact-evidence provider for an external Java test control plane.",
+  "environment": {
+    "os": "macOS 15.5 (24F74)",
+    "architecture": "arm64",
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "cargo": "1.97.1 (c980f4866 2026-06-30)",
+    "openssl": "3.6.3",
+    "graphDatabase": "not used (--no-load)",
+    "externalTestEnvironment": "not contacted"
+  },
+  "inputs": [
+    {
+      "repository": "https://github.com/phuchoang92/yummy-cih",
+      "commit": "b91f109388e8d58c1e875a92a6d83c786820a500",
+      "declaredLicense": "PolyForm-Noncommercial-1.0.0",
+      "role": "evaluated evidence provider"
+    },
+    {
+      "repository": "https://github.com/apache/fineract",
+      "commit": "106a694eb4f1bb76f380214f68dc14f6c2ad315a",
+      "declaredLicense": "Apache-2.0",
+      "role": "public Java banking benchmark"
+    }
+  ],
+  "qualityGates": {
+    "cihLayering": "passed (19 crates)",
+    "cihRetrievalSelfTest": "passed",
+    "cihRetrievalSoakSelfTest": "passed",
+    "cargoFmt": "passed",
+    "cargoClippyDenyWarnings": "passed",
+    "cargoTestWorkspace": "passed",
+    "ohmyworkValidation": "passed (5 skills)",
+    "ohmyworkTests": "passed (26 of 26)",
+    "skillValidation": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "analyses": {
+    "calibrationFixture": {
+      "files": 7,
+      "lines": 133,
+      "nodes": 50,
+      "edges": 62,
+      "resolveEdges": 15,
+      "unresolvedReferences": 3,
+      "integrityWarnings": [
+        "malformed XML parsed only to the valid prefix",
+        "duplicate node ID prevented uniqueness-based reporting metadata"
+      ]
+    },
+    "fineractLoan": {
+      "repositoryJavaFiles": 6576,
+      "repositoryApproximateLines": 867000,
+      "parsedFiles": 690,
+      "nodes": 9542,
+      "edges": 19218,
+      "resolveEdges": 9543,
+      "unresolvedReferences": {
+        "total": 14390,
+        "internal": 2781,
+        "external": 4720,
+        "dynamic": 6889
+      },
+      "testFilesRepresented": 30,
+      "relationCounts": {
+        "Tests": 69,
+        "HandlesRoute": 26,
+        "ExecutesQuery": 68,
+        "ReadsTable": 49,
+        "WritesTable": 54
+      },
+      "integrityWarnings": [
+        "one Tests edge had a missing endpoint",
+        "a permission-related constant was likely misclassified as a query writing LOAN"
+      ]
+    }
+  },
+  "testsNotRun": [
+    "Apache Fineract Gradle/JUnit suite",
+    "customer or internal application tests",
+    "external end-to-end test environment",
+    "production execution",
+    "commercial CIH deployment"
+  ],
+  "sideEffects": [
+    "network reads for repository and dependency downloads",
+    "Homebrew installation of OpenSSL 3",
+    "temporary Rust toolchain and build cache under /tmp"
+  ],
+  "cleanup": {
+    "generatedCihArtifacts": "removed",
+    "generatedGitNexusIndex": "removed",
+    "pythonCache": "removed",
+    "thirdPartyClones": "retained clean under /tmp",
+    "rustToolchainAndBuildCache": "retained under /tmp for follow-up work"
+  },
+  "decision": {
+    "status": "ready-for-provider-neutral-adapter-spike",
+    "notReadyFor": "sole test selection or commercial CIH bundling",
+    "reason": "Useful graph evidence was observed, but integrity warnings, unresolved references, likely false positives, and a non-commercial license require isolation and fallback policy."
+  }
+}

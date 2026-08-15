@@ -1,0 +1,52 @@
+Evidence transcript: CIH analysis of Apache Fineract
+Run date: 2026-08-14
+Fineract commit: 106a694eb4f1bb76f380214f68dc14f6c2ad315a
+Scope: fineract-loan
+Mode: --module fineract-loan --language java --no-load
+
+Repository scan
+  build system: Gradle
+  Java files: 6,576
+  approximate source LOC: 867,000
+
+Bounded module analysis
+  files parsed: 690
+  nodes: 9,542
+  edges: 19,218
+  resolve edges: 9,543
+  unresolved references: 14,390
+    internal: 2,781
+    external: 4,720
+    dynamic: 6,889
+  unique files represented under src/test: 30
+
+Selected relation counts
+  Calls: 4,298
+  HasField: 3,883
+  HasMethod: 3,837
+  Accesses: 3,574
+  Contains: 1,689
+  Imports: 1,172
+  MethodImplements: 214
+  MethodOverrides: 144
+  Extends: 110
+  Tests: 69
+  ExecutesQuery: 68
+  WritesTable: 54
+  ReadsTable: 49
+  HandlesRoute: 26
+
+Selected examples
+  JAX-RS route: POST /v1/delinquency/buckets
+  Tests relationships from test methods and mocked collaborators
+  query/table candidates in loan-related source
+
+Warnings preserved
+  one Tests edge referenced a missing endpoint
+  uniqueness-based graph reporting metadata was omitted
+  a permission-related constant was likely classified as a query writing LOAN
+
+Interpretation
+  These edges are useful candidates for impact expansion.
+  They are not proof that unselected tests are safe to skip.
+  Unknown or contradictory evidence must widen the selected safety net.
