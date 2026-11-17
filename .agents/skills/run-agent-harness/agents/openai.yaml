@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Agent Harness"
+  short_description: "Plan and inspect bounded local Codex runs"
+  default_prompt: "Use $run-agent-harness to plan, execute, and inspect a bounded coding run in my approved local workspace."

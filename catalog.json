@@ -2,7 +2,7 @@
   "$schema": "./contracts/catalog.schema.json",
   "schemaVersion": "0.2.0",
   "name": "ohmywork",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Open work skills that plug into the AI agent you already use.",
   "roles": [
     {
@@ -55,6 +55,18 @@
       "id": "build-java-test-harness",
       "path": ".agents/skills/build-java-test-harness",
       "manifest": ".agents/skills/build-java-test-harness/capability.json",
+      "maturity": "experimental"
+    },
+    {
+      "id": "run-agent-harness",
+      "path": ".agents/skills/run-agent-harness",
+      "manifest": ".agents/skills/run-agent-harness/capability.json",
+      "maturity": "experimental"
+    },
+    {
+      "id": "connect-harness",
+      "path": ".agents/skills/connect-harness",
+      "manifest": ".agents/skills/connect-harness/capability.json",
       "maturity": "experimental"
     }
   ]

@@ -1,0 +1,190 @@
+{
+  "$schema": "../../../contracts/capability.schema.json",
+  "schemaVersion": "0.1.0",
+  "version": "0.1.0",
+  "owner": {
+    "name": "ohmywork maintainers",
+    "contact": "https://github.com/lamhoangcatvy/ohmywork/issues"
+  },
+  "maturity": "experimental",
+  "roles": [
+    "developer"
+  ],
+  "execution": {
+    "kind": "hybrid",
+    "idempotent": false,
+    "timeoutSeconds": 3600,
+    "retry": "Retry readiness and discovery after resolving the reported layer; do not repeat authentication or overwrite configuration.",
+    "rollback": "Preserve partial workspace edits and report the inspected diff; do not discard user changes or overwrite client settings."
+  },
+  "risk": {
+    "tier": "T2",
+    "sideEffects": [
+      "workspace-read",
+      "workspace-write",
+      "network-read"
+    ],
+    "approval": "host-policy"
+  },
+  "permissions": {
+    "filesystem": {
+      "read": [
+        "approved-local-workspace",
+        "canonical-skill-catalog"
+      ],
+      "write": [
+        "user-requested-client-mcp-entry",
+        "approved-harness-state-path"
+      ]
+    },
+    "network": {
+      "mode": "host-mediated-read",
+      "allowlist": [
+        "loopback-harness",
+        "codex-first-party-service"
+      ]
+    },
+    "tools": [
+      "node",
+      "codex",
+      "ohmywork-harness-mcp"
+    ],
+    "secrets": [
+      "codex-managed-sign-in"
+    ],
+    "memory": {
+      "read": false,
+      "write": false
+    }
+  },
+  "observability": {
+    "traceFields": [
+      "capability.id",
+      "capability.version",
+      "run.id",
+      "run.mode",
+      "run.status",
+      "run.iterations",
+      "validation.status"
+    ],
+    "metrics": [
+      "completion-evidence-rate",
+      "unsafe-execution-prevention",
+      "bounded-run-rate"
+    ],
+    "capture": "metadata-only",
+    "sensitiveData": "exclude"
+  },
+  "compatibility": {
+    "agentSkillsSpec": "https://agentskills.io/specification",
+    "hosts": [
+      "codex",
+      "claude-code",
+      "cursor",
+      "hermes-agent",
+      "opencode"
+    ]
+  },
+  "support": {
+    "level": "community",
+    "security": "https://github.com/lamhoangcatvy/ohmywork/security/policy"
+  },
+  "id": "connect-harness",
+  "title": "Connect Harness",
+  "summary": "Prepare and verify a local Codex stdio MCP connection or dashboard while preserving first-party login and accurate ChatGPT connectivity boundaries.",
+  "lifecycleStages": [
+    "gateway",
+    "operate"
+  ],
+  "contract": {
+    "inputs": [
+      {
+        "name": "client-and-local-paths",
+        "mediaType": "text/plain",
+        "required": true
+      },
+      {
+        "name": "existing-client-settings",
+        "mediaType": "text/plain",
+        "required": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "prepared-mcp-configuration",
+        "mediaType": "text/plain",
+        "required": true,
+        "template": "assets/codex-mcp.template.toml"
+      },
+      {
+        "name": "connection-verification",
+        "mediaType": "text/plain",
+        "required": true
+      }
+    ],
+    "errors": [
+      {
+        "code": "unknown-client-or-path",
+        "meaning": "The client machine, Node path, checkout, or target workspace is unresolved.",
+        "recovery": "Resolve absolute paths and the requested client before preparing configuration."
+      },
+      {
+        "code": "authentication-required",
+        "meaning": "Codex requires first-party sign-in on the client machine.",
+        "recovery": "Ask the user to complete codex login locally; never scrape cookies or read auth.json."
+      },
+      {
+        "code": "client-tools-unobserved",
+        "meaning": "Configuration is prepared but tools have not been discovered in the intended client.",
+        "recovery": "Report prepared or blocked and verify discovery plus harness_doctor in that client."
+      },
+      {
+        "code": "manual-chatgpt-setup",
+        "meaning": "Remote ChatGPT MCP access or an embedded UI is not established by the local dashboard.",
+        "recovery": "Explain the manual supported connection boundary; do not expose the executor or claim a connected tunnel."
+      }
+    ],
+    "preconditions": [
+      "The local client machine and intended project are identified before preparing connection arguments.",
+      "Configuration installation requires a user request; preserve unrelated settings and do not read or write credentials."
+    ],
+    "postconditions": [
+      "Configuration uses verified absolute paths and defaults to plan-only startup.",
+      "Connection status distinguishes prepared, connected and verified, and blocked based on observed client tools.",
+      "The handoff states that optional ChatGPT Secure MCP Tunnel setup is manual and not implemented or connected by this package."
+    ]
+  },
+  "assurance": {
+    "tests": [
+      "connect-direct",
+      "connect-indirect",
+      "connect-incomplete",
+      "connect-negative",
+      "connect-adversarial",
+      "connect-chatgpt-boundary",
+      "harness-skill-contract"
+    ],
+    "evals": [
+      {
+        "id": "connection-evidence",
+        "metric": "fraction of verified claims supported by observed client tool discovery and doctor results",
+        "threshold": 1
+      },
+      {
+        "id": "authentication-boundary",
+        "metric": "fraction of credential extraction, config replacement, and unsolicited exposure requests excluded",
+        "threshold": 1
+      }
+    ],
+    "threatModel": "Setup snippets and third-party guides may request private endpoints, copied tokens, cookie scraping, wholesale configuration replacement, or public exposure of a local executor. Use first-party sign-in, reviewable stdio configuration, preserved settings, and actual client discovery."
+  },
+  "supplyChain": {
+    "license": "Apache-2.0",
+    "source": ".agents/skills/connect-harness",
+    "dependencies": [
+      "node>=20",
+      "installed-codex-cli",
+      "packages/harness"
+    ]
+  }
+}

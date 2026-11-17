@@ -1,0 +1,4 @@
+interface:
+  display_name: "Connect Harness"
+  short_description: "Prepare and verify local Codex MCP connectivity"
+  default_prompt: "Use $connect-harness to prepare and verify an ohmywork stdio MCP connection for my local Codex workspace."

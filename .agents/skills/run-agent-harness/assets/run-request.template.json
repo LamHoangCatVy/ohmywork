@@ -1,0 +1,10 @@
+{
+  "goal": "Add the agreed feature in the selected local workspace and identify acceptance evidence.",
+  "mode": "plan",
+  "tasks": [
+    "Inspect workspace instructions and the relevant implementation.",
+    "Propose the smallest change and independent validation commands."
+  ],
+  "maxIterations": 2,
+  "timeoutSeconds": 900
+}

@@ -19,20 +19,24 @@ async function fixtureRoot(t) {
 test("init creates idempotent Claude and Hermes projections", async (t) => {
   const root = await fixtureRoot(t);
   const first = await initializeProject({ root });
-  assert.equal(first.results.filter((result) => result.status === "created").length, 10);
+  assert.equal(first.results.filter((result) => result.status === "created").length, 14);
   assert.equal((await lstat(path.join(root, ".claude/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/write-user-stories"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".claude/skills/build-java-test-harness"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".claude/skills/run-agent-harness"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".claude/skills/connect-harness"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/shape-idea"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/draft-brd"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/write-user-stories"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/define-acceptance-criteria"))).isSymbolicLink(), true);
   assert.equal((await lstat(path.join(root, ".hermes/skills/build-java-test-harness"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".hermes/skills/run-agent-harness"))).isSymbolicLink(), true);
+  assert.equal((await lstat(path.join(root, ".hermes/skills/connect-harness"))).isSymbolicLink(), true);
 
   const second = await initializeProject({ root });
-  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 10);
+  assert.equal(second.results.filter((result) => result.status === "unchanged").length, 14);
   const doctor = await doctorProject({ root });
   assert.equal(doctor.healthy, true, doctor.issues.join("\n"));
 });
@@ -83,6 +87,8 @@ test("discovery groups portable skills into role views", async () => {
 
   const developer = await discoverCatalog({ roles: ["developer"] });
   assert.deepEqual(developer.roles.map((role) => role.id), ["developer"]);
-  assert.deepEqual(developer.skills.map((skill) => skill.id), ["build-java-test-harness"]);
+  assert.deepEqual(developer.skills.map((skill) => skill.id), [
+    "build-java-test-harness", "run-agent-harness", "connect-harness",
+  ]);
   await assert.rejects(discoverCatalog({ roles: ["imaginary-role"] }), /Unknown role/);
 });

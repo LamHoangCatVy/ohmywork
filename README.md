@@ -38,6 +38,17 @@ A role is a toolbox, not a separate copy of the skills. One portable skill can a
 
 See the [skill map](docs/skill-map.md) for the full role, engineering-framework, and artifact roadmap.
 
+## Local agent harness
+
+**Harness Studio** adds a local dashboard and stdio MCP tools around Codex execution: plan → task → review, with bounded iterations, cancellation, and actual token usage. It reuses your existing `codex login` authentication; ChatGPT plan access follows the account/workspace used by Codex.
+
+```bash
+codex login
+npm run harness -- --workspace /absolute/path/to/project
+```
+
+The default is read-only planning. Add `--allow-execution` to authorize editing the selected checkout. See [setup, MCP tools, ChatGPT integration, and limits](docs/agent-harness.md). This experimental local app is not a hosted execution service or an embedded ChatGPT widget.
+
 Explore the live catalog:
 
 ```bash

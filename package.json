@@ -1,12 +1,15 @@
 {
   "name": "ohmywork-workspace",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Open work skill bundle and vendor-neutral capability contracts.",
   "type": "module",
   "scripts": {
     "check": "node scripts/validate.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "harness": "node packages/harness/cli.mjs serve",
+    "harness:doctor": "node packages/harness/cli.mjs doctor",
+    "harness:mcp": "node packages/harness/cli.mjs mcp"
   },
   "engines": {
     "node": ">=20"

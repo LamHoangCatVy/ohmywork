@@ -1,0 +1,6 @@
+# Replace placeholders with verified absolute paths on the Codex client machine.
+# Prepared configuration only; install after the user requests that change.
+[mcp_servers.ohmywork_harness]
+command = "/absolute/path/to/node"
+args = ["/absolute/path/to/ohmywork/packages/harness/cli.mjs", "mcp", "--workspace", "/absolute/path/to/project"]
+# Append "--allow-execution" to args only for authorized local execution.
